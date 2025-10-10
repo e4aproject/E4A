@@ -1,27 +1,19 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Mandate v1 Schema",
   "type": "object",
   "properties": {
-    "mandate_id": {"type": "string"},
-    "issuer": {"type": "string"},
-    "beneficiary": {"type": "string"},
-    "validator_ref": {"type": "string"},
-    "proof_anchor": {
-      "type": "object",
-      "properties": {
-        "layer": {"type": "string"},
-        "anchor_ref": {"type": "string"},
-        "settlement_ref": {"type": "string"}
-      }
-    },
-    "fee_distribution": {
-      "type": "object",
-      "properties": {
-        "protocol": {"type": "number"},
-        "validator": {"type": "number"},
-        "issuer": {"type": "number"}
-      }
-    }
+    "mandate_id": { "type": "string" },
+    "parent_mandate_id": { "type": ["string", "null"] },
+    "issuer": { "type": "string" },
+    "beneficiary": { "type": "string" },
+    "amount": { "type": "number" },
+    "currency": { "type": "string" },
+    "validator_ref": { "type": "string" },
+    "proof_anchor": { "type": "object" },
+    "fee_distribution": { "type": "object" },
+    "policy_tags": { "type": "array", "items": { "type": "string" } },
+    "replay_nonce": { "type": "string" }
   },
   "required": ["mandate_id", "issuer", "beneficiary"]
 }

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Charter v1 Schema",
+  "type": "object",
+  "properties": {
+    "charter_id": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "governance_mode": { "type": "string", "enum": ["human_led", "hybrid", "autonomous"] },
+    "lite_policy_ref": { "type": "string" },
+    "validator_policy": { "type": "object" }
+  },
+  "required": ["charter_id", "name"]
+}
