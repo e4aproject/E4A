@@ -1,0 +1,27 @@
+{
+  "title": "Mandate v1 Schema",
+  "type": "object",
+  "properties": {
+    "mandate_id": {"type": "string"},
+    "issuer": {"type": "string"},
+    "beneficiary": {"type": "string"},
+    "validator_ref": {"type": "string"},
+    "proof_anchor": {
+      "type": "object",
+      "properties": {
+        "layer": {"type": "string"},
+        "anchor_ref": {"type": "string"},
+        "settlement_ref": {"type": "string"}
+      }
+    },
+    "fee_distribution": {
+      "type": "object",
+      "properties": {
+        "protocol": {"type": "number"},
+        "validator": {"type": "number"},
+        "issuer": {"type": "number"}
+      }
+    }
+  },
+  "required": ["mandate_id", "issuer", "beneficiary"]
+}

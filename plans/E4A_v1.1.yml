@@ -1,0 +1,12 @@
+version: 1.1
+components:
+  core: true
+  lite: true
+  validator_nodes: true
+roadmap:
+  - phase: 0 (Foundation)
+    deliverables: [validator_schema, registry_api, schema_sanity_pipeline]
+  - phase: 1 (Spec Lock)
+    deliverables: [mandate_v1_schema_lock, URA_update_with_proof_anchor, AP2_rail_hooks]
+  - phase: 2 (Reference Impl.)
+    deliverables: [mock_validator_service, Lite_handshake_stub, transparency_log_prototype]
