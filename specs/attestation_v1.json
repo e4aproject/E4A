@@ -1,14 +1,15 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Attestation v1 Schema",
   "type": "object",
   "properties": {
-    "attestation_id": {"type": "string"},
-    "spec_version": {"type": "string"},
-    "commit_hash": {"type": "string"},
-    "tests_passed": {"type": "boolean"},
-    "signature": {"type": "string"},
-    "did": {"type": "string"},
-    "vc": {"type": "object"}
+    "attestation_id": { "type": "string" },
+    "spec_version": { "type": "string" },
+    "commit_hash": { "type": "string" },
+    "tests_passed": { "type": "boolean" },
+    "signature": { "type": "string" },
+    "did": { "type": "string" },
+    "vc": { "type": "object" }
   },
   "required": ["attestation_id", "spec_version", "commit_hash"]
 }
