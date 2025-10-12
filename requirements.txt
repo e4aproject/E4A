@@ -5,3 +5,5 @@ typer
 requests
 pyyaml 
 uvicorn
+httpx
+jsonschema
