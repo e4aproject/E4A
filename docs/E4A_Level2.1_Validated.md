@@ -1,4 +1,4 @@
-# Ethos for Agents (E4A)
+# Ethos4Agents (E4A)
 ## Level 2.1 — Validated Architecture Summary
 E4A defines a governance and cultural layer for autonomous agent systems.
 This reference architecture establishes:
