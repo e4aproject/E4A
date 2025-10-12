@@ -1,0 +1,8 @@
+site_name: E4A Protocol Docs
+nav:
+  - Home: index.md
+  - Reference:
+      - API: reference/api.md
+      - CLI: reference/cli.md
+theme:
+  name: material

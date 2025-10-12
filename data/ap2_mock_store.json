@@ -1,0 +1,226 @@
+{
+  "mandates": {
+    "28cfcb4f-c2ef-4835-8565-1f22c14b7a90": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "28cfcb4f-c2ef-4835-8565-1f22c14b7a90",
+      "created_at": "2025-10-10T12:07:50.038022Z",
+      "signatures": [
+        "sig-tester-28cfcb4f-c2ef-4835-8565-1f22c14b7a90"
+      ]
+    },
+    "7bc264d7-7864-4c8f-853a-514590eb4d4e": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "7bc264d7-7864-4c8f-853a-514590eb4d4e",
+      "created_at": "2025-10-10T12:31:39.366006Z",
+      "signatures": [
+        "sig-tester-7bc264d7-7864-4c8f-853a-514590eb4d4e"
+      ]
+    },
+    "710ceda8-3d98-4f38-bef9-53473a62d015": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "710ceda8-3d98-4f38-bef9-53473a62d015",
+      "created_at": "2025-10-10T12:57:25.560277Z",
+      "signatures": [
+        "sig-tester-710ceda8-3d98-4f38-bef9-53473a62d015"
+      ]
+    },
+    "d849e4c0-eafd-4e84-a042-58e4915ace88": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "d849e4c0-eafd-4e84-a042-58e4915ace88",
+      "created_at": "2025-10-10T12:58:58.296075Z",
+      "signatures": [
+        "sig-tester-d849e4c0-eafd-4e84-a042-58e4915ace88"
+      ]
+    },
+    "892206e4-8ad6-4e0a-8d2f-15189cb4c532": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "892206e4-8ad6-4e0a-8d2f-15189cb4c532",
+      "created_at": "2025-10-10T13:01:09.585766Z",
+      "signatures": [
+        "sig-tester-892206e4-8ad6-4e0a-8d2f-15189cb4c532"
+      ]
+    },
+    "96269ed3-1b5e-464b-8eaf-1981c83f077b": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "96269ed3-1b5e-464b-8eaf-1981c83f077b",
+      "created_at": "2025-10-10T19:21:11.772424Z",
+      "signatures": [
+        "sig-tester-96269ed3-1b5e-464b-8eaf-1981c83f077b"
+      ]
+    },
+    "f66a8aec-d84f-4750-87c1-79081e8dc034": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "f66a8aec-d84f-4750-87c1-79081e8dc034",
+      "created_at": "2025-10-10T19:22:33.242682Z",
+      "signatures": [
+        "sig-tester-f66a8aec-d84f-4750-87c1-79081e8dc034"
+      ]
+    },
+    "a5956176-3173-41dd-bbaa-44f93b166362": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "a5956176-3173-41dd-bbaa-44f93b166362",
+      "created_at": "2025-10-10T19:26:17.942085Z",
+      "signatures": [
+        "sig-tester-a5956176-3173-41dd-bbaa-44f93b166362"
+      ]
+    },
+    "e49806c0-47ce-4079-9b10-f12619e8534b": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "e49806c0-47ce-4079-9b10-f12619e8534b",
+      "created_at": "2025-10-10T19:30:00.257772Z",
+      "signatures": [
+        "sig-tester-e49806c0-47ce-4079-9b10-f12619e8534b"
+      ]
+    },
+    "ff3a7f2e-aed9-415f-8240-be2adfd51c02": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "ff3a7f2e-aed9-415f-8240-be2adfd51c02",
+      "created_at": "2025-10-11T13:32:54.406484Z",
+      "signatures": [
+        "sig-tester-ff3a7f2e-aed9-415f-8240-be2adfd51c02"
+      ]
+    }
+  },
+  "submissions": {
+    "706d09b1-fc34-4100-bc13-474b99b4629b": {
+      "submission_id": "706d09b1-fc34-4100-bc13-474b99b4629b",
+      "mandate_id": "28cfcb4f-c2ef-4835-8565-1f22c14b7a90",
+      "submitted_at": "2025-10-10T12:07:50.038763Z",
+      "status": "settled"
+    },
+    "9c11dba5-cc51-452f-bfa7-2394fca5e355": {
+      "submission_id": "9c11dba5-cc51-452f-bfa7-2394fca5e355",
+      "mandate_id": "7bc264d7-7864-4c8f-853a-514590eb4d4e",
+      "submitted_at": "2025-10-10T12:31:39.366712Z",
+      "status": "settled"
+    },
+    "613283fc-09db-4d66-b39c-94fec220ca3f": {
+      "submission_id": "613283fc-09db-4d66-b39c-94fec220ca3f",
+      "mandate_id": "710ceda8-3d98-4f38-bef9-53473a62d015",
+      "submitted_at": "2025-10-10T12:57:25.561153Z",
+      "status": "settled"
+    },
+    "665477e5-3a29-4d23-9117-d171214fb083": {
+      "submission_id": "665477e5-3a29-4d23-9117-d171214fb083",
+      "mandate_id": "d849e4c0-eafd-4e84-a042-58e4915ace88",
+      "submitted_at": "2025-10-10T12:58:58.297019Z",
+      "status": "settled"
+    },
+    "a19241be-dbc1-43d9-bb10-816977961c85": {
+      "submission_id": "a19241be-dbc1-43d9-bb10-816977961c85",
+      "mandate_id": "892206e4-8ad6-4e0a-8d2f-15189cb4c532",
+      "submitted_at": "2025-10-10T13:01:09.587119Z",
+      "status": "settled"
+    },
+    "98b377de-36b8-4d0c-bbcc-6bcbed909e7b": {
+      "submission_id": "98b377de-36b8-4d0c-bbcc-6bcbed909e7b",
+      "mandate_id": "96269ed3-1b5e-464b-8eaf-1981c83f077b",
+      "submitted_at": "2025-10-10T19:21:11.773424Z",
+      "status": "settled"
+    },
+    "c55c1cd6-914c-4c93-ad89-9adae60f91ad": {
+      "submission_id": "c55c1cd6-914c-4c93-ad89-9adae60f91ad",
+      "mandate_id": "f66a8aec-d84f-4750-87c1-79081e8dc034",
+      "submitted_at": "2025-10-10T19:22:33.243694Z",
+      "status": "settled"
+    },
+    "8120061b-0e92-450b-b0d5-ccab9ef696c3": {
+      "submission_id": "8120061b-0e92-450b-b0d5-ccab9ef696c3",
+      "mandate_id": "a5956176-3173-41dd-bbaa-44f93b166362",
+      "submitted_at": "2025-10-10T19:26:17.943428Z",
+      "status": "settled"
+    },
+    "5f6370da-e0bf-460a-8cf0-f4fe595166ea": {
+      "submission_id": "5f6370da-e0bf-460a-8cf0-f4fe595166ea",
+      "mandate_id": "e49806c0-47ce-4079-9b10-f12619e8534b",
+      "submitted_at": "2025-10-10T19:30:00.259229Z",
+      "status": "settled"
+    },
+    "d0a2c0f0-4e94-4f63-b9b5-a77592b256e7": {
+      "submission_id": "d0a2c0f0-4e94-4f63-b9b5-a77592b256e7",
+      "mandate_id": "ff3a7f2e-aed9-415f-8240-be2adfd51c02",
+      "submitted_at": "2025-10-11T13:32:54.408287Z",
+      "status": "settled"
+    }
+  }
+}

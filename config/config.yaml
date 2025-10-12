@@ -1,0 +1,9 @@
+node_id: e4a-node-local
+api:
+  host: "http://localhost:8000"
+  timeout: 5
+db:
+  type: "json"
+  path: "data/e4a_state.json"
+logging:
+  level: INFO

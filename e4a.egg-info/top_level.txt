@@ -1,0 +1,5 @@
+adapters
+api
+cli
+core
+e4a_sdk

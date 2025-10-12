@@ -1,0 +1,2 @@
+[console_scripts]
+e4a = cli.cli_main:cli

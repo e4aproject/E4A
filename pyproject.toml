@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "e4a"
+version = "1.0.0"
+description = "E4A — Evolutionary Educational Architecture SDK, CLI, and API"
+readme = "README.md"
+authors = [
+  { name = "Dan Everett", email = "deverett@toltoncatholic.org" }
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+  "typer>=0.12.3",
+  "fastapi>=0.111.0",
+  "uvicorn>=0.30.0",
+  "requests>=2.31.0",
+  "pydantic>=2.0",
+  "httpx>=0.27.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/YOUR_GITHUB_USERNAME/E4A"
+Documentation = "https://YOUR_GITHUB_USERNAME.github.io/E4A"
+Repository = "https://github.com/YOUR_GITHUB_USERNAME/E4A"
+
+[project.scripts]
+e4a = "cli.cli_main:cli"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["api*", "core*", "cli*", "adapters*", "e4a_sdk*"]
+
+[tool.setuptools]
+package-dir = {"" = "."}
+include-package-data = true
