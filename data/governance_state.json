@@ -1,0 +1,26 @@
+{
+  "charters": {
+    "charter-x": {
+      "charter_id": "charter-x",
+      "doc": {
+        "name": "Test Charter"
+      },
+      "registered_at": "2025-10-11T13:32:54.396833+00:00"
+    }
+  },
+  "proposals": {
+    "prop-1": {
+      "proposal_id": "prop-1",
+      "charter_id": "charter-x",
+      "proposal": {
+        "action": "test-action"
+      },
+      "created_at": "2025-10-11T13:32:54.397152+00:00",
+      "votes": {
+        "validator-1": "yes"
+      },
+      "enacted_at": "2025-10-11T13:32:54.397759+00:00",
+      "status": "enacted"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "subjects": {
+    "did:example:validator-1": {
+      "events": [
+        {
+          "event_type": "positive_behavior",
+          "weight": 3.0,
+          "ts": "2025-10-10T12:31:39.362628+00:00"
+        },
+        {
+          "event_type": "positive_behavior",
+          "weight": 3.0,
+          "ts": "2025-10-10T12:57:25.555504+00:00"
+        }
+      ],
+      "score": 6.0
+    }
+  }
+}

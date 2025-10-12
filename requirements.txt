@@ -1,1 +1,7 @@
-pytest\nrequests\njsonschema
+pytest
+fastapi
+uvicorn
+typer
+requests
+pyyaml 
+uvicorn
