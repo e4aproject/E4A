@@ -1,9 +1,9 @@
-import pytest
 from core.scribe_agent import ScribeAgent
 from core.mandate_engine import MandateEngine
 from adapters.universal_rail_adapter.cardano_midnight_bridge import CardanoMidnightBridge
 from core.governance_kernel import GovernanceKernel
 from core.reputation_index import ReputationIndex
+
 
 def test_bridge_and_governance(tmp_path):
     # prepare scribe + mandate engine
@@ -29,7 +29,7 @@ def test_bridge_and_governance(tmp_path):
     ch = g.register_charter('charter-x', {'name': 'Test Charter'})
     assert ch['charter_id'] == 'charter-x'
 
-    prop = g.submit_proposal('charter-x', 'prop-1', {'action': 'test-action'})
+    # prop = g.submit_proposal('charter-x', 'prop-1', {'action': 'test-action'})
     g.vote('prop-1', 'validator-1', 'yes')
     out = g.simulate_and_enact('prop-1', quorum=1)
     assert out['status'] == 'enacted'

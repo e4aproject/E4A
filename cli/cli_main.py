@@ -11,6 +11,7 @@ from e4a_sdk.client import E4AClient
 cli = typer.Typer()
 config = load_config()
 
+
 @cli.callback(invoke_without_command=True)
 def main(ctx: typer.Context):
     """
@@ -19,8 +20,10 @@ def main(ctx: typer.Context):
     if ctx.invoked_subcommand is None:
         typer.echo("E4A CLI — use subcommands. Try 'e4a --help'.")
 
+
 # mount existing subcommands under `e4a` root
 cli.add_typer(e4a_app, name="e4a")
+
 
 @cli.command("sdk-test")
 def sdk_test():

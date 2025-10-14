@@ -8,8 +8,10 @@ from datetime import datetime, timezone
 from adapters.universal_rail_adapter.midnight_adapter import MidnightAdapter
 from adapters.universal_rail_adapter.eth_adapter import EthAdapter
 
+
 class BridgeError(Exception):
     pass
+
 
 class CardanoMidnightBridge:
     def __init__(self, midnight=None, settlement_adapter=None):

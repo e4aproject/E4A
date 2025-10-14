@@ -1,9 +1,9 @@
-import os
 from core.scribe_agent import ScribeAgent
 from core.mandate_engine import MandateEngine
 from adapters.ap2.ap2_client import AP2Client
 from adapters.universal_rail_adapter.midnight_adapter import MidnightAdapter
 from adapters.universal_rail_adapter.eth_adapter import EthAdapter
+
 
 def test_ap2_create_sign_submit_and_midnight_anchor(tmp_path):
     # Setup

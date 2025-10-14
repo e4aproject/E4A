@@ -1,6 +1,5 @@
-import os
-import json
 from e4a_sdk.client import E4AClient
+
 
 def test_sdk_health_local():
     client = E4AClient(base_url="http://localhost:8000")

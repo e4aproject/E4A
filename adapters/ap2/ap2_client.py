@@ -5,10 +5,12 @@ Implements create -> sign -> submit and create_submandate behavior.
 """
 
 #import os
-#from ..ap2.ap2_mock_server import AP2MockServer
+from ..ap2.ap2_mock_server import AP2MockServer
+
 
 class AP2ClientError(Exception):
     pass
+
 
 class AP2Client:
     def __init__(self, server=None):

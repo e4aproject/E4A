@@ -4,10 +4,12 @@ Minimal E4A SDK: wraps HTTP to the local API (or can be subclassed for in-proces
 Designed to be dependency-light (uses requests).
 """
 import requests
-from typing import Optional, Dict
+from typing import Dict
+
 
 class E4AError(Exception):
     pass
+
 
 class E4AClient:
     def __init__(self, base_url: str = "http://localhost:8000", timeout: int = 5):
@@ -30,7 +32,10 @@ class E4AClient:
 
     # High-level convenience methods:
     def create_mandate(self, issuer: str, beneficiary: str, amount: float, currency: str = "USD"):
-        return self._post("/mandates/create", {"issuer": issuer, "beneficiary": beneficiary, "amount": amount, "currency": currency})
+        return self._post("/mandates/create", {"issuer": issuer,
+                                               "beneficiary": beneficiary,
+                                               "amount": amount,
+                                               "currency": currency})
 
     def execute_mandate(self, mandate_id: str):
         return self._post(f"/mandates/execute/{mandate_id}", {})

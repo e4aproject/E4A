@@ -9,6 +9,7 @@ from typing import Any, Dict
 
 DEFAULT_PATH = Path(os.path.dirname(__file__)).parent.joinpath("config", "config.yaml")
 
+
 class Config:
     def __init__(self, data: Dict[str, Any]):
         self._data = data
@@ -18,6 +19,7 @@ class Config:
 
     def as_dict(self):
         return dict(self._data)
+
 
 def load_config(path: str = None) -> Config:
     p = Path(path) if path else DEFAULT_PATH

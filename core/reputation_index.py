@@ -1,5 +1,6 @@
 from typing import Dict, List
 
+
 class ReputationIndex:
     def __init__(self):
         # Initialize reputation storage

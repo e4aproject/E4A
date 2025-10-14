@@ -19,6 +19,7 @@ engine = MandateEngine(scribe)
 gov = GovernanceKernel()
 rep = ReputationIndex()
 
+
 @app.command()
 def mandate_create(issuer: str, beneficiary: str, amount: float, currency: str = "USD"):
     """Create a new mandate"""
@@ -30,11 +31,13 @@ def mandate_create(issuer: str, beneficiary: str, amount: float, currency: str =
     })
     typer.echo(json.dumps(result, indent=2))
 
+
 @app.command()
 def mandate_execute(mandate_id: str):
     """Execute a mandate"""
     result = engine.execute_mandate(mandate_id)
     typer.echo(json.dumps(result, indent=2))
+
 
 @app.command()
 def governance_propose(pid: str, action: str, description: str):
@@ -42,11 +45,13 @@ def governance_propose(pid: str, action: str, description: str):
     out = gov.propose(pid, action, description)
     typer.echo(json.dumps(out, indent=2))
 
+
 @app.command()
 def governance_vote(pid: str, vote: str):
     """Vote on a proposal"""
     out = gov.vote(pid, vote)
     typer.echo(json.dumps(out, indent=2))
+
 
 @app.command()
 def governance_enact(pid: str):
@@ -54,16 +59,19 @@ def governance_enact(pid: str):
     out = gov.enact(pid)
     typer.echo(json.dumps(out, indent=2))
 
+
 @app.command()
 def reputation_view():
     """Display current reputation index"""
     rep.ingest_from_scribe(scribe)
     typer.echo(json.dumps(rep.get_all(), indent=2))
 
+
 @app.command()
 def ledger_show():
     """Show full scribe ledger"""
     typer.echo(json.dumps(scribe.ledger, indent=2))
+
 
 if __name__ == "__main__":
     app()

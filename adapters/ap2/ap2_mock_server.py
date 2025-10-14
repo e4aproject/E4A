@@ -11,6 +11,7 @@ from datetime import datetime
 
 STORE_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'ap2_mock_store.json')
 
+
 def _ensure_store():
     d = os.path.dirname(STORE_PATH)
     os.makedirs(d, exist_ok=True)
@@ -18,14 +19,17 @@ def _ensure_store():
         with open(STORE_PATH, 'w') as fh:
             json.dump({"mandates": {}, "submissions": {}}, fh)
 
+
 def _load():
     _ensure_store()
     with open(STORE_PATH, 'r') as fh:
         return json.load(fh)
 
+
 def _save(state):
     with open(STORE_PATH, 'w') as fh:
         json.dump(state, fh, indent=2, default=str)
+
 
 class AP2MockServer:
     def __init__(self):

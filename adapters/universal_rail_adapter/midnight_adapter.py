@@ -13,20 +13,24 @@ from datetime import datetime
 
 STORE = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'midnight_store.json')
 
+
 def _ensure():
     os.makedirs(os.path.dirname(STORE), exist_ok=True)
     if not os.path.exists(STORE):
         with open(STORE, 'w') as fh:
             json.dump({"proofs": {}}, fh)
 
+
 def _load():
     _ensure()
     with open(STORE, 'r') as fh:
         return json.load(fh)
 
+
 def _save(state):
     with open(STORE, 'w') as fh:
         json.dump(state, fh, indent=2, default=str)
+
 
 class MidnightAdapter:
     def __init__(self):

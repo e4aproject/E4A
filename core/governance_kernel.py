@@ -13,20 +13,24 @@ from typing import Dict, Any
 
 STATE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'governance_state.json')
 
+
 def _ensure():
     os.makedirs(os.path.dirname(STATE_PATH), exist_ok=True)
     if not os.path.exists(STATE_PATH):
         with open(STATE_PATH, 'w') as fh:
             json.dump({'charters': {}, 'proposals': {}}, fh)
 
+
 def _load():
     _ensure()
     with open(STATE_PATH, 'r') as fh:
         return json.load(fh)
 
+
 def _save(state):
     with open(STATE_PATH, 'w') as fh:
         json.dump(state, fh, indent=2, default=str)
+
 
 class GovernanceKernel:
     def __init__(self):
