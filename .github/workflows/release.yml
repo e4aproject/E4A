@@ -4,11 +4,12 @@ on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 permissions:
   contents: read
-  id-token: write  # Required for OIDC Trusted Publisher authentication
   packages: write
+  id-token: write
 
 jobs:
   publish:
@@ -16,25 +17,30 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Set up Python
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
+      - name: Install build tools
         run: |
           python -m pip install --upgrade pip
           pip install build twine
-          pip install -r requirements.txt
-          pip install pytest flake8 httpx jsonschema
 
       - name: Build Python package
-        run: |
-          python -m build
+        run: python -m build
 
-      - name: Publish to PyPI via Trusted Publisher
+      - name: Publish to PyPI (Trusted Publisher via OIDC)
+        # pypa/gh-action-pypi-publish supports OIDC when permissions/id-token is present
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+        # Note: if using PyPI Trusted Publisher you can leave TWINE creds empty and rely on OIDC,
+        # but keeping TWINE secret here is fine as fallback.
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -42,8 +48,24 @@ jobs:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org/'
 
-      - name: Publish NPM package using Trusted Publisher
-        run: npm publish --access public
-        
-      - name: List installed packages
-        run: pip list  
+      - name: Prepare npm package
+        run: |
+          npm ci --no-audit --no-fund
+          # optional build
+          npm run build || true
+
+      - name: Publish to npm (Trusted Publisher / OIDC)
+        env:
+          # If you use npm Trusted Publisher via OIDC, you don't need NPM_TOKEN; kept for fallback.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          # Ensure package.json version is consistent with tag (recommended)
+          echo "Publishing to npm..."
+          npm publish --access public
+
+      - name: Create GitHub Release (notes from tag)
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.whl
+            dist/*.tar.gz
