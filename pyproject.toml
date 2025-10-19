@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "E4A — Evolutionary Educational Architecture SDK, CLI, and API"
 readme = "README.md"
 authors = [
-  { name = "Dan Everett", email = "deverett@toltoncatholic.org" }
+  { name = "Dan Everett", email = "e4a.protocol@gmail.com" }
 ]
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
