@@ -7,9 +7,7 @@ name = "e4a"
 version = "1.0.0"
 description = "E4A — Evolutionary Educational Architecture SDK, CLI, and API"
 readme = "README.md"
-authors = [
-  { name = "Dan Everett", email = "e4a.protocol@gmail.com" }
-]
+authors = [{ name = "Dan Everett", email = "e4a.protocol@gmail.com" }]
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
 dependencies = [
@@ -22,17 +20,12 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/YOUR_GITHUB_USERNAME/E4A"
-Documentation = "https://YOUR_GITHUB_USERNAME.github.io/E4A"
-Repository = "https://github.com/YOUR_GITHUB_USERNAME/E4A"
+Homepage = "https://github.com/e4aproject/E4A"
+Documentation = "https://e4aproject.github.io/E4A"
+Repository = "https://github.com/e4aproject/E4A"
 
 [project.scripts]
 e4a = "cli.cli_main:cli"
 
 [tool.setuptools.packages.find]
-where = ["."]
 include = ["api*", "core*", "cli*", "adapters*", "e4a_sdk*"]
-
-[tool.setuptools]
-package-dir = {"" = "."}
-include-package-data = true
