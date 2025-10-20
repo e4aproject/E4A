@@ -50,9 +50,11 @@ jobs:
 
       - name: Prepare npm package
         run: |
-          npm ci --no-audit --no-fund
+          - run: npm install
+        # The below code is for later
+          # npm ci --no-audit --no-fund
           # optional build
-          npm run build || true
+          # npm run build || true
 
       - name: Publish to npm (Trusted Publisher / OIDC)
         env:
