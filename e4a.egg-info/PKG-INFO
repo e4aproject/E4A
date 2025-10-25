@@ -1,10 +1,8 @@
 Metadata-Version: 2.4
 Name: e4a
 Version: 1.0.0
-Summary: E4A — Evolutionary Educational Architecture SDK, CLI, and API
-Home-page: https://github.com/YOUR_GITHUB_USERNAME/E4A
-Author: Dan Everett
-Author-email: Dan Everett <deverett@toltoncatholic.org>
+Summary: E4A — Ethos4Agents SDK, CLI, and API
+Author-email: Dan Everett <e4a.protocol@gmail.com>
 License: MIT License
         
         Copyright (c) 2025 e4aproject
@@ -27,9 +25,9 @@ License: MIT License
         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
         SOFTWARE.
         
-Project-URL: Homepage, https://github.com/YOUR_GITHUB_USERNAME/E4A
-Project-URL: Documentation, https://YOUR_GITHUB_USERNAME.github.io/E4A
-Project-URL: Repository, https://github.com/YOUR_GITHUB_USERNAME/E4A
+Project-URL: Homepage, https://github.com/e4aproject/E4A
+Project-URL: Documentation, https://e4aproject.github.io/E4A
+Project-URL: Repository, https://github.com/e4aproject/E4A
 Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 License-File: LICENSE
@@ -102,6 +100,13 @@ Quick commands (from repo root):
 Notes:
 - These modules are reference stubs to bootstrap Phase 1. Replace mission_log persistence and in-memory stores with production stores in later phases.
 - Use the schemas in specs/ to extend validation and to design adapters.
+
+
+## Publishing note
+
+This repository uses `pyproject.toml` as the canonical Python packaging metadata source. The npm package is scoped under `@e4aproject` and is configured to publish publicly (`publishConfig.access = public` in `package.json`).
+
+If you rely on `setup.cfg` or generated egg-info metadata, prefer updating `pyproject.toml` as the authoritative source for future releases.
 
 
 

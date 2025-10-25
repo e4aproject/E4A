@@ -29,3 +29,6 @@ e4a = "cli.cli_main:cli"
 
 [tool.setuptools.packages.find]
 include = ["api*", "core*", "cli*", "adapters*", "e4a_sdk*"]
+
+[tool.setuptools]
+include-package-data = true

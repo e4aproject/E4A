@@ -61,4 +61,11 @@ Notes:
 - Use the schemas in specs/ to extend validation and to design adapters.
 
 
+## Publishing note
+
+This repository uses `pyproject.toml` as the canonical Python packaging metadata source. The npm package is scoped under `@e4aproject` and is configured to publish publicly (`publishConfig.access = public` in `package.json`).
+
+If you rely on `setup.cfg` or generated egg-info metadata, prefer updating `pyproject.toml` as the authoritative source for future releases.
+
+
 

@@ -1,17 +1,24 @@
 {
   "name": "@e4aproject/protocol",
   "version": "1.0.0",
-  "description": "E4A Protocol — CLI + SDK",
-  "bin": { "e4a": "./bin/e4a.js" },
-  "scripts": { "test": "echo \"No tests yet\"" },
+  "description": "E4A CLI Wrapper (Node SDK Bridge)",
+  "bin": {
+    "e4a": "./bin/e4a.js"
+  },
+  "scripts": {
+    "test": "echo \"No tests for NPM wrapper yet\""
+  },
+  "author": "Dan Everett",
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/e4aproject/E4A.git"
   },
-  "author": "Dan Everett",
-  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "devDependencies": {
-    "semantic-release": "^21.1.0",
+    "semantic-release": "^21.0.0",
     "@semantic-release/changelog": "^6.0.0",
     "@semantic-release/git": "^10.0.0",
     "@semantic-release/npm": "^9.0.0",
@@ -29,7 +36,7 @@
         "@semantic-release/git",
         {
           "assets": ["CHANGELOG.md", "package.json"],
-          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+          "message": "chore(release): ${nextRelease.version} [skip ci]\\n\\n${nextRelease.notes}"
         }
       ]
     ]
