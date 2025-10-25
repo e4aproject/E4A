@@ -18,7 +18,7 @@
     "access": "public"
   },
   "devDependencies": {
-    "semantic-release": "^21.0.0",
+    "semantic-release": "^25.0.1",
     "@semantic-release/changelog": "^6.0.0",
     "@semantic-release/git": "^10.0.0",
     "@semantic-release/npm": "^9.0.0",
