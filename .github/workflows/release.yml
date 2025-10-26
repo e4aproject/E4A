@@ -1,74 +1,52 @@
-name: Release & Publish (npm + PyPI via OIDC)
+# This is the single source of truth for releasing packages to PyPI and NPM.
+# It uses OIDC for tokenless authentication with PyPI, which is the industry best practice.
+name: Release E4A Packages
 
 on:
-  push:
-    branches: [ main ]
-  workflow_dispatch:
-
-permissions:
-  contents: write
-  packages: write
-  id-token: write  # required for OIDC
+  release:
+    types: [published]
 
 jobs:
-  release:
-    name: Release npm + PyPI
+  publish-pypi:
+    name: Publish Python package to PyPI
     runs-on: ubuntu-latest
-
+    permissions:
+      id-token: write # Required for OIDC
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # required for semantic-release
-
-      # -------------------------------
-      # NODE.JS RELEASE (npm via OIDC)
-      # -------------------------------
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          registry-url: 'https://registry.npmjs.org'
-          scope: '@e4aproject'
-          always-auth: true  # OIDC-compatible
-          token: ${{ secrets.GITHUB_TOKEN }}  # GitHub OIDC will derive this
-
-      - run: npm ci
-
-      - name: Semantic Release (npm via OIDC)
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_CONFIG_PROVENANCE: true
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
-
-      # -------------------------------
-      # VERSION SYNC (npm → Python)
-      # -------------------------------
-      - name: Sync version to Python
-        id: version
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Synced version: $VERSION"
-          sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
-
-      # -------------------------------
-      # PYTHON RELEASE (PyPI via OIDC)
-      # -------------------------------
-      - name: Setup Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
-
-      - name: Build and Check Python Package
+          python-version: "3.11"
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade build twine check-wheel-contents
-          python -m build
-          python -m twine check dist/*
-          check-wheel-contents dist/*.whl
-
-      - name: Publish to PyPI via OIDC
+          python -m pip install --upgrade pip
+          pip install build
+      - name: Build package
+        run: python -m build
+      - name: Publish package to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  publish-npm:
+    name: Publish TypeScript/JS package to NPM
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for OIDC
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          attestations: true
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install dependencies and publish
+        # This step assumes a package.json.
+        run: |
+          # If your npm package is not at the root, add 'cd your-package-dir' here
+          # npm ci
+          npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # NPM still requires a token for now

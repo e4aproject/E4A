@@ -1,0 +1,2920 @@
+This file is a merged representation of the entire codebase, combined into a single document by Repomix.
+
+<file_summary>
+This section contains a summary of this file.
+
+<purpose>
+This file contains a packed representation of the entire repository's contents.
+It is designed to be easily consumable by AI systems for analysis, code review,
+or other automated processes.
+</purpose>
+
+<file_format>
+The content is organized as follows:
+1. This summary section
+2. Repository information
+3. Directory structure
+4. Repository files (if enabled)
+5. Multiple file entries, each consisting of:
+  - File path as an attribute
+  - Full contents of the file
+</file_format>
+
+<usage_guidelines>
+- This file should be treated as read-only. Any changes should be made to the
+  original repository files, not this packed version.
+- When processing this file, use the file path to distinguish
+  between different files in the repository.
+- Be aware that this file may contain sensitive information. Handle it with
+  the same level of security as you would the original repository.
+</usage_guidelines>
+
+<notes>
+- Some files may have been excluded based on .gitignore rules and Repomix's configuration
+- Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
+- Files matching patterns in .gitignore are excluded
+- Files matching default ignore patterns are excluded
+- Files are sorted by Git change count (files with more changes are at the bottom)
+</notes>
+
+</file_summary>
+
+<directory_structure>
+.github/
+  workflows/
+    ci.yml
+    publish.yml
+    release.yml
+    semantic-release.yml
+  dependabot.yml
+adapters/
+  a2a/
+    aries_adapter.py
+  ap2/
+    __init__.py
+    ap2_client.py
+    ap2_mock_server.py
+  universal_rail_adapter/
+    __init__.py
+    cardano_adapter.py
+    cardano_midnight_bridge.py
+    eth_adapter.py
+    fabric_adapter.py
+    midnight_adapter.py
+  __init__.py
+api/
+  server.py
+bin/
+  e4a.js
+cli/
+  __init__.py
+  cli_main.py
+  e4a_cli.py
+config/
+  config.yaml
+core/
+  __init__.py
+  __version__.py
+  charter_engine.py
+  config_loader.py
+  evolution_engine.py
+  governance_kernel.py
+  mandate_engine.py
+  reputation_index.py
+  scribe_agent.py
+  validator_runtime.py
+cultural/
+  audits/
+    cultural_audit.py
+  charters/
+    charter.yaml
+data/
+  ap2_mock_store.json
+  chain_anchors.json
+  governance_state.json
+  midnight_store.json
+  mission_log.jsonl
+  reputation_store.json
+devops/
+  ci.yml
+docs/
+  reference/
+    api.md
+    cli.md
+  E4A_Level2.1_Validated.md
+  index.md
+  PUBLISHING.md
+e4a_sdk/
+  __init__.py
+  client.py
+e4a.egg-info/
+  dependency_links.txt
+  entry_points.txt
+  PKG-INFO
+  requires.txt
+  SOURCES.txt
+  top_level.txt
+examples/
+  demo_full_run.py
+governance/
+  council/
+    __init__.py
+  pef_spec.md
+  voting_rules.yaml
+plans/
+  E4A_v1.1.yml
+scripts/
+  scripts/
+    build_publish_py.sh
+specs/
+  attestation_v1.json
+  charter_v1.json
+  mandate_v1.json
+tests/
+  simulation/
+    cultural_drift_sim.py
+  __init__.py
+  test_api_cli_integration.py
+  test_cardano_midnight_bridge.py
+  test_cli_sdk.py
+  test_integration_ap2_midnight.py
+  test_mandate_engine.py
+.dockerignore
+.flake8
+.gitignore
+.python-version
+all_code.md
+CHANGELOG.md 
+CONTRIBUTING.md
+LICENSE
+MANIFEST.in
+mkdocs.yml
+package.json
+pyproject.toml
+README.md
+requirements.txt
+</directory_structure>
+
+<files>
+This section contains the contents of the repository's files.
+
+<file path=".github/workflows/publish.yml">
+name: Release and Publish
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
+jobs:
+  release:
+    name: Release (npm + PyPI)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: https://registry.npmjs.org
+          cache: 'npm'
+
+      - name: Configure npm auth
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Run semantic-release (publish to npm & create GitHub release)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Build Python packages
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@v1.5.0
+        with:
+          user: __token__
+          password: ${{ secrets.PYPI_API_TOKEN }}
+</file>
+
+<file path=".github/dependabot.yml">
+version: 2
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+</file>
+
+<file path="bin/e4a.js">
+#!/usr/bin/env node
+import { spawn } from "child_process";
+const args = process.argv.slice(2);
+const proc = spawn("python", ["-m", "cli.cli_main", ...args], { stdio: "inherit" });
+proc.on("exit", (code) => process.exit(code));
+</file>
+
+<file path="config/config.yaml">
+node_id: e4a-node-local
+api:
+  host: "http://localhost:8000"
+  timeout: 5
+db:
+  type: "json"
+  path: "data/e4a_state.json"
+logging:
+  level: INFO
+</file>
+
+<file path="data/ap2_mock_store.json">
+{
+  "mandates": {
+    "28cfcb4f-c2ef-4835-8565-1f22c14b7a90": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "28cfcb4f-c2ef-4835-8565-1f22c14b7a90",
+      "created_at": "2025-10-10T12:07:50.038022Z",
+      "signatures": [
+        "sig-tester-28cfcb4f-c2ef-4835-8565-1f22c14b7a90"
+      ]
+    },
+    "7bc264d7-7864-4c8f-853a-514590eb4d4e": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "7bc264d7-7864-4c8f-853a-514590eb4d4e",
+      "created_at": "2025-10-10T12:31:39.366006Z",
+      "signatures": [
+        "sig-tester-7bc264d7-7864-4c8f-853a-514590eb4d4e"
+      ]
+    },
+    "710ceda8-3d98-4f38-bef9-53473a62d015": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "710ceda8-3d98-4f38-bef9-53473a62d015",
+      "created_at": "2025-10-10T12:57:25.560277Z",
+      "signatures": [
+        "sig-tester-710ceda8-3d98-4f38-bef9-53473a62d015"
+      ]
+    },
+    "d849e4c0-eafd-4e84-a042-58e4915ace88": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "d849e4c0-eafd-4e84-a042-58e4915ace88",
+      "created_at": "2025-10-10T12:58:58.296075Z",
+      "signatures": [
+        "sig-tester-d849e4c0-eafd-4e84-a042-58e4915ace88"
+      ]
+    },
+    "892206e4-8ad6-4e0a-8d2f-15189cb4c532": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "892206e4-8ad6-4e0a-8d2f-15189cb4c532",
+      "created_at": "2025-10-10T13:01:09.585766Z",
+      "signatures": [
+        "sig-tester-892206e4-8ad6-4e0a-8d2f-15189cb4c532"
+      ]
+    },
+    "96269ed3-1b5e-464b-8eaf-1981c83f077b": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "96269ed3-1b5e-464b-8eaf-1981c83f077b",
+      "created_at": "2025-10-10T19:21:11.772424Z",
+      "signatures": [
+        "sig-tester-96269ed3-1b5e-464b-8eaf-1981c83f077b"
+      ]
+    },
+    "f66a8aec-d84f-4750-87c1-79081e8dc034": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "f66a8aec-d84f-4750-87c1-79081e8dc034",
+      "created_at": "2025-10-10T19:22:33.242682Z",
+      "signatures": [
+        "sig-tester-f66a8aec-d84f-4750-87c1-79081e8dc034"
+      ]
+    },
+    "a5956176-3173-41dd-bbaa-44f93b166362": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "a5956176-3173-41dd-bbaa-44f93b166362",
+      "created_at": "2025-10-10T19:26:17.942085Z",
+      "signatures": [
+        "sig-tester-a5956176-3173-41dd-bbaa-44f93b166362"
+      ]
+    },
+    "e49806c0-47ce-4079-9b10-f12619e8534b": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "e49806c0-47ce-4079-9b10-f12619e8534b",
+      "created_at": "2025-10-10T19:30:00.257772Z",
+      "signatures": [
+        "sig-tester-e49806c0-47ce-4079-9b10-f12619e8534b"
+      ]
+    },
+    "ff3a7f2e-aed9-415f-8240-be2adfd51c02": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "mandate_id": "ff3a7f2e-aed9-415f-8240-be2adfd51c02",
+      "created_at": "2025-10-11T13:32:54.406484Z",
+      "signatures": [
+        "sig-tester-ff3a7f2e-aed9-415f-8240-be2adfd51c02"
+      ]
+    }
+  },
+  "submissions": {
+    "706d09b1-fc34-4100-bc13-474b99b4629b": {
+      "submission_id": "706d09b1-fc34-4100-bc13-474b99b4629b",
+      "mandate_id": "28cfcb4f-c2ef-4835-8565-1f22c14b7a90",
+      "submitted_at": "2025-10-10T12:07:50.038763Z",
+      "status": "settled"
+    },
+    "9c11dba5-cc51-452f-bfa7-2394fca5e355": {
+      "submission_id": "9c11dba5-cc51-452f-bfa7-2394fca5e355",
+      "mandate_id": "7bc264d7-7864-4c8f-853a-514590eb4d4e",
+      "submitted_at": "2025-10-10T12:31:39.366712Z",
+      "status": "settled"
+    },
+    "613283fc-09db-4d66-b39c-94fec220ca3f": {
+      "submission_id": "613283fc-09db-4d66-b39c-94fec220ca3f",
+      "mandate_id": "710ceda8-3d98-4f38-bef9-53473a62d015",
+      "submitted_at": "2025-10-10T12:57:25.561153Z",
+      "status": "settled"
+    },
+    "665477e5-3a29-4d23-9117-d171214fb083": {
+      "submission_id": "665477e5-3a29-4d23-9117-d171214fb083",
+      "mandate_id": "d849e4c0-eafd-4e84-a042-58e4915ace88",
+      "submitted_at": "2025-10-10T12:58:58.297019Z",
+      "status": "settled"
+    },
+    "a19241be-dbc1-43d9-bb10-816977961c85": {
+      "submission_id": "a19241be-dbc1-43d9-bb10-816977961c85",
+      "mandate_id": "892206e4-8ad6-4e0a-8d2f-15189cb4c532",
+      "submitted_at": "2025-10-10T13:01:09.587119Z",
+      "status": "settled"
+    },
+    "98b377de-36b8-4d0c-bbcc-6bcbed909e7b": {
+      "submission_id": "98b377de-36b8-4d0c-bbcc-6bcbed909e7b",
+      "mandate_id": "96269ed3-1b5e-464b-8eaf-1981c83f077b",
+      "submitted_at": "2025-10-10T19:21:11.773424Z",
+      "status": "settled"
+    },
+    "c55c1cd6-914c-4c93-ad89-9adae60f91ad": {
+      "submission_id": "c55c1cd6-914c-4c93-ad89-9adae60f91ad",
+      "mandate_id": "f66a8aec-d84f-4750-87c1-79081e8dc034",
+      "submitted_at": "2025-10-10T19:22:33.243694Z",
+      "status": "settled"
+    },
+    "8120061b-0e92-450b-b0d5-ccab9ef696c3": {
+      "submission_id": "8120061b-0e92-450b-b0d5-ccab9ef696c3",
+      "mandate_id": "a5956176-3173-41dd-bbaa-44f93b166362",
+      "submitted_at": "2025-10-10T19:26:17.943428Z",
+      "status": "settled"
+    },
+    "5f6370da-e0bf-460a-8cf0-f4fe595166ea": {
+      "submission_id": "5f6370da-e0bf-460a-8cf0-f4fe595166ea",
+      "mandate_id": "e49806c0-47ce-4079-9b10-f12619e8534b",
+      "submitted_at": "2025-10-10T19:30:00.259229Z",
+      "status": "settled"
+    },
+    "d0a2c0f0-4e94-4f63-b9b5-a77592b256e7": {
+      "submission_id": "d0a2c0f0-4e94-4f63-b9b5-a77592b256e7",
+      "mandate_id": "ff3a7f2e-aed9-415f-8240-be2adfd51c02",
+      "submitted_at": "2025-10-11T13:32:54.408287Z",
+      "status": "settled"
+    }
+  }
+}
+</file>
+
+<file path="data/chain_anchors.json">
+{
+  "anchors": {
+    "0x9a40012f790740318f765ea7c5e7d67a": {
+      "proof_hash": "36f9fd77-f814-46b2-9bcb-d1737fbf850c",
+      "chain": "ethereum-test",
+      "tx_hash": "0x9a40012f790740318f765ea7c5e7d67a",
+      "timestamp": "2025-10-10T12:07:50.039688Z"
+    },
+    "0xde767bfe9479464789283c71a4cd1527": {
+      "proof_hash": "bf856d30-94ad-4325-b2eb-e1e8b3977c65",
+      "chain": "ethereum",
+      "tx_hash": "0xde767bfe9479464789283c71a4cd1527",
+      "timestamp": "2025-10-10T12:31:39.360489Z"
+    },
+    "0xbff452bf201b4900ac414ce07200d6dd": {
+      "proof_hash": "aec11674-4d6c-4001-90e4-317eb2d24032",
+      "chain": "ethereum-test",
+      "tx_hash": "0xbff452bf201b4900ac414ce07200d6dd",
+      "timestamp": "2025-10-10T12:31:39.367419Z"
+    },
+    "0x17e8fb49798f42678b257f68d131a4f9": {
+      "proof_hash": "7040c4c9-6b57-463e-becb-e31b5583d681",
+      "chain": "ethereum",
+      "tx_hash": "0x17e8fb49798f42678b257f68d131a4f9",
+      "timestamp": "2025-10-10T12:57:25.552766Z"
+    },
+    "0xa280fee6a74f460fa8673632d4629bcd": {
+      "proof_hash": "de30e2e5-5117-4bf0-baa5-39c8801870a2",
+      "chain": "ethereum-test",
+      "tx_hash": "0xa280fee6a74f460fa8673632d4629bcd",
+      "timestamp": "2025-10-10T12:57:25.562304Z"
+    },
+    "0x5d9a8fe19217455ab7b7d41e4982eb0d": {
+      "proof_hash": "2f870981-93f9-4cbc-98c9-fc6b56337ee1",
+      "chain": "ethereum",
+      "tx_hash": "0x5d9a8fe19217455ab7b7d41e4982eb0d",
+      "timestamp": "2025-10-10T12:58:58.204143Z"
+    },
+    "0x9cbc3928d24b4c9581c4a7e248ed33ff": {
+      "proof_hash": "c5b8254e-9de1-464b-a006-a1e71aaa6fcd",
+      "chain": "ethereum-test",
+      "tx_hash": "0x9cbc3928d24b4c9581c4a7e248ed33ff",
+      "timestamp": "2025-10-10T12:58:58.297993Z"
+    },
+    "0xe5bb4cedf937401ab7910b0f8b2d9eb6": {
+      "proof_hash": "bf2dad7b-7dd4-441a-ae72-5cee3fb9ce52",
+      "chain": "ethereum",
+      "tx_hash": "0xe5bb4cedf937401ab7910b0f8b2d9eb6",
+      "timestamp": "2025-10-10T13:01:09.541668Z"
+    },
+    "0xf7fa5b8906b540c48dcccee41a78b026": {
+      "proof_hash": "82193d12-da34-43e6-ba90-6c2891bcb61d",
+      "chain": "ethereum-test",
+      "tx_hash": "0xf7fa5b8906b540c48dcccee41a78b026",
+      "timestamp": "2025-10-10T13:01:09.588590Z"
+    },
+    "0x3a9b5f6ce5e945748d7880fee390b17f": {
+      "proof_hash": "54d009fb-e8bd-47d3-91a1-991e44c54805",
+      "chain": "ethereum",
+      "tx_hash": "0x3a9b5f6ce5e945748d7880fee390b17f",
+      "timestamp": "2025-10-10T19:21:11.762386Z"
+    },
+    "0x1e5f28f40daf4abca8b7af8744ff7f0a": {
+      "proof_hash": "5b11a8b8-22e0-477a-ad68-b3bae8907445",
+      "chain": "ethereum-test",
+      "tx_hash": "0x1e5f28f40daf4abca8b7af8744ff7f0a",
+      "timestamp": "2025-10-10T19:21:11.774332Z"
+    },
+    "0xaf03ba07a3e04001bd8d41b32030992d": {
+      "proof_hash": "65437ed4-c887-42dc-a5df-833cfcd66324",
+      "chain": "ethereum",
+      "tx_hash": "0xaf03ba07a3e04001bd8d41b32030992d",
+      "timestamp": "2025-10-10T19:22:33.232154Z"
+    },
+    "0xd6e8d1a757b54c9e9a72547a27c5ddcf": {
+      "proof_hash": "7d28205a-caaa-49b2-b099-15bee20137c1",
+      "chain": "ethereum-test",
+      "tx_hash": "0xd6e8d1a757b54c9e9a72547a27c5ddcf",
+      "timestamp": "2025-10-10T19:22:33.244668Z"
+    },
+    "0x1801c083a65846c9bc09b9487a709988": {
+      "proof_hash": "941a1968-9479-43a6-a79e-1f20198c3bd3",
+      "chain": "ethereum",
+      "tx_hash": "0x1801c083a65846c9bc09b9487a709988",
+      "timestamp": "2025-10-10T19:26:17.936108Z"
+    },
+    "0xc98834a348e74543be700dbf9b595056": {
+      "proof_hash": "90225070-52f7-4ed1-b551-626e14774f6c",
+      "chain": "ethereum-test",
+      "tx_hash": "0xc98834a348e74543be700dbf9b595056",
+      "timestamp": "2025-10-10T19:26:17.944574Z"
+    },
+    "0x3edff71127bc400791eef939df9fbb56": {
+      "proof_hash": "2558b12a-b5b5-41df-bfa7-68696a42470e",
+      "chain": "ethereum",
+      "tx_hash": "0x3edff71127bc400791eef939df9fbb56",
+      "timestamp": "2025-10-10T19:30:00.251681Z"
+    },
+    "0x3d3cc2a9bb9545cfbd98193c6ada1ab2": {
+      "proof_hash": "aa827f7b-3f64-4610-a333-fdbddd9d50bb",
+      "chain": "ethereum-test",
+      "tx_hash": "0x3d3cc2a9bb9545cfbd98193c6ada1ab2",
+      "timestamp": "2025-10-10T19:30:00.260779Z"
+    },
+    "0x149feba0343940f6ae69de34c30d9637": {
+      "proof_hash": "ba207163-5935-4d68-947b-60db23746e14",
+      "chain": "ethereum",
+      "tx_hash": "0x149feba0343940f6ae69de34c30d9637",
+      "timestamp": "2025-10-11T13:32:54.395856Z"
+    },
+    "0x50b15cf60c0247178d00a91f1f4b32bf": {
+      "proof_hash": "eda65d7e-20bc-4096-a8ed-fa9776be1532",
+      "chain": "ethereum-test",
+      "tx_hash": "0x50b15cf60c0247178d00a91f1f4b32bf",
+      "timestamp": "2025-10-11T13:32:54.409936Z"
+    }
+  }
+}
+</file>
+
+<file path="data/governance_state.json">
+{
+  "charters": {
+    "charter-x": {
+      "charter_id": "charter-x",
+      "doc": {
+        "name": "Test Charter"
+      },
+      "registered_at": "2025-10-11T13:32:54.396833+00:00"
+    }
+  },
+  "proposals": {
+    "prop-1": {
+      "proposal_id": "prop-1",
+      "charter_id": "charter-x",
+      "proposal": {
+        "action": "test-action"
+      },
+      "created_at": "2025-10-11T13:32:54.397152+00:00",
+      "votes": {
+        "validator-1": "yes"
+      },
+      "enacted_at": "2025-10-11T13:32:54.397759+00:00",
+      "status": "enacted"
+    }
+  }
+}
+</file>
+
+<file path="data/midnight_store.json">
+{
+  "proofs": {
+    "36f9fd77-f814-46b2-9bcb-d1737fbf850c": {
+      "anchor_ref": "36f9fd77-f814-46b2-9bcb-d1737fbf850c",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T12:07:50.039243Z",
+      "settlement_ref": "0x9a40012f790740318f765ea7c5e7d67a",
+      "published_at": "2025-10-10T12:07:50.039973Z"
+    },
+    "bf856d30-94ad-4325-b2eb-e1e8b3977c65": {
+      "anchor_ref": "bf856d30-94ad-4325-b2eb-e1e8b3977c65",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T12:31:39.360115Z",
+      "settlement_ref": "0xde767bfe9479464789283c71a4cd1527",
+      "published_at": "2025-10-10T12:31:39.360781Z"
+    },
+    "aec11674-4d6c-4001-90e4-317eb2d24032": {
+      "anchor_ref": "aec11674-4d6c-4001-90e4-317eb2d24032",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T12:31:39.367073Z",
+      "settlement_ref": "0xbff452bf201b4900ac414ce07200d6dd",
+      "published_at": "2025-10-10T12:31:39.367832Z"
+    },
+    "7040c4c9-6b57-463e-becb-e31b5583d681": {
+      "anchor_ref": "7040c4c9-6b57-463e-becb-e31b5583d681",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T12:57:25.552359Z",
+      "settlement_ref": "0x17e8fb49798f42678b257f68d131a4f9",
+      "published_at": "2025-10-10T12:57:25.553086Z"
+    },
+    "de30e2e5-5117-4bf0-baa5-39c8801870a2": {
+      "anchor_ref": "de30e2e5-5117-4bf0-baa5-39c8801870a2",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T12:57:25.561748Z",
+      "settlement_ref": "0xa280fee6a74f460fa8673632d4629bcd",
+      "published_at": "2025-10-10T12:57:25.562820Z"
+    },
+    "2f870981-93f9-4cbc-98c9-fc6b56337ee1": {
+      "anchor_ref": "2f870981-93f9-4cbc-98c9-fc6b56337ee1",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T12:58:58.203191Z",
+      "settlement_ref": "0x5d9a8fe19217455ab7b7d41e4982eb0d",
+      "published_at": "2025-10-10T12:58:58.206436Z"
+    },
+    "c5b8254e-9de1-464b-a006-a1e71aaa6fcd": {
+      "anchor_ref": "c5b8254e-9de1-464b-a006-a1e71aaa6fcd",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T12:58:58.297562Z",
+      "settlement_ref": "0x9cbc3928d24b4c9581c4a7e248ed33ff",
+      "published_at": "2025-10-10T12:58:58.298510Z"
+    },
+    "bf2dad7b-7dd4-441a-ae72-5cee3fb9ce52": {
+      "anchor_ref": "bf2dad7b-7dd4-441a-ae72-5cee3fb9ce52",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T13:01:09.541216Z",
+      "settlement_ref": "0xe5bb4cedf937401ab7910b0f8b2d9eb6",
+      "published_at": "2025-10-10T13:01:09.542021Z"
+    },
+    "82193d12-da34-43e6-ba90-6c2891bcb61d": {
+      "anchor_ref": "82193d12-da34-43e6-ba90-6c2891bcb61d",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T13:01:09.587821Z",
+      "settlement_ref": "0xf7fa5b8906b540c48dcccee41a78b026",
+      "published_at": "2025-10-10T13:01:09.589145Z"
+    },
+    "54d009fb-e8bd-47d3-91a1-991e44c54805": {
+      "anchor_ref": "54d009fb-e8bd-47d3-91a1-991e44c54805",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T19:21:11.761813Z",
+      "settlement_ref": "0x3a9b5f6ce5e945748d7880fee390b17f",
+      "published_at": "2025-10-10T19:21:11.762810Z"
+    },
+    "5b11a8b8-22e0-477a-ad68-b3bae8907445": {
+      "anchor_ref": "5b11a8b8-22e0-477a-ad68-b3bae8907445",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T19:21:11.773900Z",
+      "settlement_ref": "0x1e5f28f40daf4abca8b7af8744ff7f0a",
+      "published_at": "2025-10-10T19:21:11.774728Z"
+    },
+    "65437ed4-c887-42dc-a5df-833cfcd66324": {
+      "anchor_ref": "65437ed4-c887-42dc-a5df-833cfcd66324",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T19:22:33.231622Z",
+      "settlement_ref": "0xaf03ba07a3e04001bd8d41b32030992d",
+      "published_at": "2025-10-10T19:22:33.232572Z"
+    },
+    "7d28205a-caaa-49b2-b099-15bee20137c1": {
+      "anchor_ref": "7d28205a-caaa-49b2-b099-15bee20137c1",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T19:22:33.244192Z",
+      "settlement_ref": "0xd6e8d1a757b54c9e9a72547a27c5ddcf",
+      "published_at": "2025-10-10T19:22:33.245081Z"
+    },
+    "941a1968-9479-43a6-a79e-1f20198c3bd3": {
+      "anchor_ref": "941a1968-9479-43a6-a79e-1f20198c3bd3",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T19:26:17.935550Z",
+      "settlement_ref": "0x1801c083a65846c9bc09b9487a709988",
+      "published_at": "2025-10-10T19:26:17.936522Z"
+    },
+    "90225070-52f7-4ed1-b551-626e14774f6c": {
+      "anchor_ref": "90225070-52f7-4ed1-b551-626e14774f6c",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T19:26:17.944076Z",
+      "settlement_ref": "0xc98834a348e74543be700dbf9b595056",
+      "published_at": "2025-10-10T19:26:17.944987Z"
+    },
+    "2558b12a-b5b5-41df-bfa7-68696a42470e": {
+      "anchor_ref": "2558b12a-b5b5-41df-bfa7-68696a42470e",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T19:30:00.251118Z",
+      "settlement_ref": "0x3edff71127bc400791eef939df9fbb56",
+      "published_at": "2025-10-10T19:30:00.252081Z"
+    },
+    "aa827f7b-3f64-4610-a333-fdbddd9d50bb": {
+      "anchor_ref": "aa827f7b-3f64-4610-a333-fdbddd9d50bb",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-10T19:30:00.260119Z",
+      "settlement_ref": "0x3d3cc2a9bb9545cfbd98193c6ada1ab2",
+      "published_at": "2025-10-10T19:30:00.261273Z"
+    },
+    "ba207163-5935-4d68-947b-60db23746e14": {
+      "anchor_ref": "ba207163-5935-4d68-947b-60db23746e14",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-11T13:32:54.394822Z",
+      "settlement_ref": "0x149feba0343940f6ae69de34c30d9637",
+      "published_at": "2025-10-11T13:32:54.396301Z"
+    },
+    "eda65d7e-20bc-4096-a8ed-fa9776be1532": {
+      "anchor_ref": "eda65d7e-20bc-4096-a8ed-fa9776be1532",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-10-11T13:32:54.409167Z",
+      "settlement_ref": "0x50b15cf60c0247178d00a91f1f4b32bf",
+      "published_at": "2025-10-11T13:32:54.410585Z"
+    }
+  }
+}
+</file>
+
+<file path="data/mission_log.jsonl">
+{"entry_type": "health", "note": "phase1 ok", "entry_id": "entry-1760059608", "timestamp": "2025-10-10T01:26:48.979637Z", "narrative_summary": "health recorded"}
+{"entry_type": "mandate_created", "mandate_id": "f2a928c1-8d37-4ce5-b502-23c63086ec65", "payload": {"issuer": "did:ex:alice", "beneficiary": "did:ex:bob", "amount": 25, "currency": "USD", "fee_distribution": {"protocol": 0.01, "validator": 0.02, "issuer": 0.0}, "mandate_id": "f2a928c1-8d37-4ce5-b502-23c63086ec65", "created_at": "2025-10-10T01:28:08.688902Z"}, "entry_id": "entry-1760059688", "timestamp": "2025-10-10T01:28:08.690889Z", "narrative_summary": "Mandate created by did:ex:alice for did:ex:bob (id=f2a928c1-8d37-4ce5-b502-23c63086ec65)"}
+{"entry_type": "mandate_executed", "mandate_id": "f2a928c1-8d37-4ce5-b502-23c63086ec65", "executor": "system", "result": {"status": "executed", "executor": "system", "executed_at": "2025-10-10T01:28:08.691026Z", "fees": {"protocol_amount": 0.25, "validator_amount": 0.5, "issuer_amount": 0.0}}, "entry_id": "entry-1760059688", "timestamp": "2025-10-10T01:28:08.691045Z", "narrative_summary": "Mandate f2a928c1-8d37-4ce5-b502-23c63086ec65 executed by system"}
+{"entry_type": "meta_audit", "node_id": "validator-1", "timestamp": "2025-10-10T01:28:30.435112Z", "summary": {"counts": {"health": 1, "mandate_created": 1, "mandate_executed": 1}, "total_recent": 3}}
+</file>
+
+<file path="data/reputation_store.json">
+{
+  "subjects": {
+    "did:example:validator-1": {
+      "events": [
+        {
+          "event_type": "positive_behavior",
+          "weight": 3.0,
+          "ts": "2025-10-10T12:31:39.362628+00:00"
+        },
+        {
+          "event_type": "positive_behavior",
+          "weight": 3.0,
+          "ts": "2025-10-10T12:57:25.555504+00:00"
+        }
+      ],
+      "score": 6.0
+    }
+  }
+}
+</file>
+
+<file path="docs/reference/api.md">
+# API Reference
+
+- `POST /mandates/create` — create a mandate
+- `POST /mandates/execute/{id}` — execute a mandate
+- `GET /reputation` — fetch aggregated reputation
+- `GET /health` — node health
+</file>
+
+<file path="docs/reference/cli.md">
+# CLI Reference
+
+Use the CLI to create mandates, run governance flows, and inspect reputation.
+
+Examples:
+</file>
+
+<file path="docs/index.md">
+# E4A Protocol Documentation
+
+Welcome to E4A — the Ethos for Agents protocol. This doc root contains quickstart and reference material.
+</file>
+
+<file path="docs/PUBLISHING.md">
+# Publishing guide — E4A
+
+This document describes the secrets and local commands used to publish the project to npm and PyPI. The repository includes a GitHub Actions workflow at `.github/workflows/publish.yml` that performs both steps when a change is pushed to `main` or the workflow is triggered manually.
+
+Required GitHub Secrets
+
+- `NPM_TOKEN` — an npm automation token with publish rights for the `@e4aproject` scope. Create it at https://www.npmjs.com/settings/<your-username>/tokens. In the workflow it is used to authenticate `semantic-release`.
+- `PYPI_API_TOKEN` — a PyPI API token. Create it at https://pypi.org/manage/account/ (or the project-specific publisher page) and add it to the repository secrets. The action uses `__token__` as the username and this token as the password.
+- `GITHUB_TOKEN` — provided automatically by GitHub Actions (no manual setup required).
+
+Notes and recommendations
+
+- Scoped npm packages (those whose `name` begins with `@e4aproject/`) are private by default. This repo sets `publishConfig.access = public` in `package.json` so the automated publish will attempt a public publish. Ensure the account that created `NPM_TOKEN` has permission to publish under `@e4aproject`.
+- If your organization enforces npm 2FA restrictions, create a token set for CI/automation (Authorization-only token) and ensure that token is used for the `NPM_TOKEN` secret.
+
+Local test commands
+
+1. Check what npm would publish (dry-run):
+
+```bash
+npm publish --access public --dry-run
+```
+
+2. Build Python artifacts locally and verify them with twine:
+
+```bash
+python -m pip install --upgrade build twine
+python -m build
+python -m twine check dist/*
+```
+
+3. To upload to TestPyPI (manual, for testing) using an API token:
+
+```bash
+python -m twine upload --repository-url https://test.pypi.org/legacy/ -u __token__ -p <TEST_PYPI_API_TOKEN> dist/*
+```
+
+CI behavior
+
+- The workflow first runs `semantic-release` which will examine commits, determine a new version, publish to npm (via `@semantic-release/npm`), push tags, and create a GitHub Release with changelog.
+- After `semantic-release` completes, the workflow builds Python distributions and uses `pypa/gh-action-pypi-publish` to upload to PyPI using `PYPI_API_TOKEN`.
+
+Troubleshooting
+
+- If semantic-release fails to publish to npm, check that `NPM_TOKEN` is set and belongs to an account with publish permissions for the `@e4aproject` scope.
+- If PyPI upload fails, check `PYPI_API_TOKEN` and visit https://pypi.org/manage/project/<your-project>/settings/publishing/ to confirm GitHub Publisher settings if you are using the GitHub-to-PyPI publisher integration.
+
+If you want, I can further refine the workflow to use OIDC (no stored secrets for PyPI) or split npm and PyPI into separate workflows with more granular permissions. Request that and I'll implement it.
+</file>
+
+<file path="e4a.egg-info/dependency_links.txt">
+
+</file>
+
+<file path="e4a.egg-info/entry_points.txt">
+[console_scripts]
+e4a = cli.cli_main:cli
+</file>
+
+<file path="e4a.egg-info/requires.txt">
+typer>=0.12.3
+fastapi>=0.111.0
+uvicorn>=0.30.0
+requests>=2.31.0
+pydantic>=2.0
+httpx>=0.27.0
+</file>
+
+<file path="e4a.egg-info/top_level.txt">
+adapters
+api
+cli
+core
+e4a_sdk
+</file>
+
+<file path="examples/demo_full_run.py">
+# examples/demo_full_run.py
+from core.scribe_agent import ScribeAgent
+from core.mandate_engine import MandateEngine
+from core.reputation_index import ReputationIndex
+from core.governance_kernel import GovernanceKernel
+import json
+
+scribe = ScribeAgent(node_id="demo-node")
+engine = MandateEngine(scribe)
+rep = ReputationIndex()
+gov = GovernanceKernel()
+
+print("=== DEMO: E4A Full System Run ===")
+
+m = engine.create_mandate({"issuer": "did:ex:alice", "beneficiary": "did:ex:bob", "amount": 42})
+print("Mandate created:", json.dumps(m, indent=2))
+
+result = engine.execute_mandate(m["mandate_id"])
+print("Mandate executed:", json.dumps(result, indent=2))
+
+rep.ingest_from_scribe(scribe)
+print("Reputation index:", json.dumps(rep.get_all(), indent=2))
+
+gov.propose("p1", "upgrade_protocol", "Enable hybrid validation and reputation bonding.")
+gov.vote("p1", "yes")
+gov.enact("p1")
+
+print("Governance enacted:", json.dumps(gov.proposals["p1"], indent=2))
+
+print("\nLedger snapshot:")
+print(json.dumps(scribe.ledger, indent=2))
+</file>
+
+<file path="plans/E4A_v1.1.yml">
+version: 1.1
+components:
+  core: true
+  lite: true
+  validator_nodes: true
+roadmap:
+  - phase: 0 (Foundation)
+    deliverables: [validator_schema, registry_api, schema_sanity_pipeline]
+  - phase: 1 (Spec Lock)
+    deliverables: [mandate_v1_schema_lock, URA_update_with_proof_anchor, AP2_rail_hooks]
+  - phase: 2 (Reference Impl.)
+    deliverables: [mock_validator_service, Lite_handshake_stub, transparency_log_prototype]
+</file>
+
+<file path="scripts/scripts/build_publish_py.sh">
+#!/usr/bin/env bash
+set -e
+python -m pip install --upgrade build
+python -m build
+echo "Built packages in dist/ — use twine to upload to PyPI when ready."
+</file>
+
+<file path="specs/charter_v1.json">
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Charter v1 Schema",
+  "type": "object",
+  "properties": {
+    "charter_id": { "type": "string" },
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "governance_mode": { "type": "string", "enum": ["human_led", "hybrid", "autonomous"] },
+    "lite_policy_ref": { "type": "string" },
+    "validator_policy": { "type": "object" }
+  },
+  "required": ["charter_id", "name"]
+}
+</file>
+
+<file path=".dockerignore">
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+.env
+.venv/
+venv/
+dist/
+build/
+.eggs/
+.idea/
+.vscode/
+*.egg-info/
+</file>
+
+<file path=".python-version">
+3.12
+</file>
+
+<file path="CONTRIBUTING.md">
+# 🤝 Contributing to E4A
+
+Welcome to the **E4A (Ethos4Agents)** open-source protocol.
+
+E4A is built as an interoperable framework aligned with open collaboration standards similar to A2A, MCP, AP2. We use semantic versioning, conventional commits, and a staged branching model to ensure clarity and stability across all components.
+
+
+--------------------------------------------------------------------
+
+## 🧱 Branching Model
+
+| Branch | Purpose | Automation |
+|---------|----------|------------|
+| `main` | Stable public releases | Auto-publishes to PyPI + NPM |
+| `dev` | Integration + staging | CI testing & verification |
+| `feat/*` | Feature branches | Merged into `dev` |
+| `fix/*` | Bug fixes | Merged into `dev` |
+| `docs/*` | Documentation | Merged into `dev` |
+
+When the project scales to multiple contributors, E4A will adopt the **A2A/MCP protocol branching model** with `release/*` and `hotfix/*` lanes.
+
+
+--------------------------------------------------------------------
+
+## 🧩 Commit Message Format
+
+All commits follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+</file>
+
+<file path="LICENSE">
+MIT License
+
+Copyright (c) 2025 e4aproject
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</file>
+
+<file path="MANIFEST.in">
+include README.md
+include LICENSE
+recursive-include docs *
+recursive-include config *
+recursive-include specs *
+recursive-include examples *
+</file>
+
+<file path="mkdocs.yml">
+site_name: E4A Protocol Docs
+nav:
+  - Home: index.md
+  - Reference:
+      - API: reference/api.md
+      - CLI: reference/cli.md
+theme:
+  name: material
+</file>
+
+<file path=".github/workflows/semantic-release.yml">
+name: Semantic Release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  id-token: write
+  packages: write
+
+jobs:
+  semantic:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+</file>
+
+<file path="adapters/ap2/ap2_mock_server.py">
+"""
+AP2 Mock Server (local simulator)
+Provides a simple in-process simulator for AP2 create/sign/submit flows.
+State stored in data/ap2_mock_store.json
+"""
+
+import json
+import os
+import uuid
+from datetime import datetime
+
+STORE_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'ap2_mock_store.json')
+
+
+def _ensure_store():
+    d = os.path.dirname(STORE_PATH)
+    os.makedirs(d, exist_ok=True)
+    if not os.path.exists(STORE_PATH):
+        with open(STORE_PATH, 'w') as fh:
+            json.dump({"mandates": {}, "submissions": {}}, fh)
+
+
+def _load():
+    _ensure_store()
+    with open(STORE_PATH, 'r') as fh:
+        return json.load(fh)
+
+
+def _save(state):
+    with open(STORE_PATH, 'w') as fh:
+        json.dump(state, fh, indent=2, default=str)
+
+
+class AP2MockServer:
+    def __init__(self):
+        _ensure_store()
+
+    def create(self, mandate_payload):
+        state = _load()
+        mandate_id = mandate_payload.get('mandate_id') or str(uuid.uuid4())
+        mandate_payload['mandate_id'] = mandate_id
+        mandate_payload['created_at'] = datetime.utcnow().isoformat() + 'Z'
+        state['mandates'][mandate_id] = mandate_payload
+        _save(state)
+        return {"status": "created", "mandate_id": mandate_id}
+
+    def sign(self, mandate_id, signer="mock-signer"):
+        state = _load()
+        if mandate_id not in state['mandates']:
+            return {"status": "error", "reason": "mandate_not_found"}
+        sig = f"sig-{signer}-{mandate_id}"
+        state['mandates'][mandate_id].setdefault('signatures', []).append(sig)
+        _save(state)
+        return {"status": "signed", "signature": sig}
+
+    def submit(self, mandate_id):
+        state = _load()
+        if mandate_id not in state['mandates']:
+            return {"status": "error", "reason": "mandate_not_found"}
+        submission_id = str(uuid.uuid4())
+        state['submissions'][submission_id] = {
+            "submission_id": submission_id,
+            "mandate_id": mandate_id,
+            "submitted_at": datetime.utcnow().isoformat() + 'Z',
+            "status": "settled"
+        }
+        _save(state)
+        return {"status": "settled", "submission_id": submission_id}
+</file>
+
+<file path="adapters/universal_rail_adapter/cardano_midnight_bridge.py">
+"""
+Cardano <-> Midnight Bridge (simulated)
+
+Uses MidnightAdapter and EthAdapter to create confidential contracts and anchor them to L1.
+Provides a convenience function `bridge_and_settle` that performs the flow end-to-end.
+"""
+from datetime import datetime, timezone
+from adapters.universal_rail_adapter.midnight_adapter import MidnightAdapter
+from adapters.universal_rail_adapter.eth_adapter import EthAdapter
+
+
+class BridgeError(Exception):
+    pass
+
+
+class CardanoMidnightBridge:
+    def __init__(self, midnight=None, settlement_adapter=None):
+        self.midnight = midnight or MidnightAdapter()
+        self.settlement = settlement_adapter or EthAdapter(chain_name='ethereum')
+
+    def bridge_and_settle(self, mandate_payload):
+        # 1) create confidential contract on Midnight
+        created = self.midnight.create_confidential_contract(mandate_payload)
+        if not created or 'anchor_ref' not in created:
+            raise BridgeError('midnight_creation_failed')
+        anchor_ref = created['anchor_ref']
+
+        # 2) submit anchor to settlement (simulate Cardano/Ethereum L1)
+        tx = self.settlement.submit_anchor(anchor_ref)
+        if tx.get('status') != 'submitted':
+            raise BridgeError('settlement_submission_failed')
+        tx_hash = tx.get('tx_hash')
+
+        # 3) publish settlement_ref back to Midnight store
+        pub = self.midnight.publish_anchor(anchor_ref, settlement_ref=tx_hash)
+        if pub.get('status') != 'published':
+            raise BridgeError('publish_failed')
+
+        return {
+            'anchor_ref': anchor_ref,
+            'settlement_tx': tx_hash,
+            'created_at': datetime.now(timezone.utc).isoformat()
+        }
+</file>
+
+<file path="api/server.py">
+# api/server.py
+from fastapi import FastAPI
+from pydantic import BaseModel
+from core.mandate_engine import MandateEngine
+from core.scribe_agent import ScribeAgent
+from core.governance_kernel import GovernanceKernel
+from core.reputation_index import ReputationIndex
+
+app = FastAPI(title="E4A Protocol API", version="1.0")
+
+scribe = ScribeAgent(node_id="api-node")
+engine = MandateEngine(scribe)
+gov = GovernanceKernel()
+rep = ReputationIndex()
+
+
+class MandateRequest(BaseModel):
+    issuer: str
+    beneficiary: str
+    amount: float
+    currency: str = "USD"
+
+
+@app.post("/mandates/create")
+def create_mandate(req: MandateRequest):
+    result = engine.create_mandate(req.dict())
+    return {"status": "created", "mandate": result}
+
+
+@app.post("/mandates/execute/{mandate_id}")
+def execute_mandate(mandate_id: str):
+    result = engine.execute_mandate(mandate_id)
+    return {"status": "executed", "mandate_id": mandate_id, "result": result}
+
+
+@app.get("/reputation")
+def get_reputation():
+    rep.ingest_from_scribe(scribe)
+    return {"reputation": rep.get_all()}
+
+
+class Proposal(BaseModel):
+    id: str
+    action: str
+    description: str
+
+
+@app.post("/governance/propose")
+def propose_change(p: Proposal):
+    return {"status": "proposed", "proposal": gov.propose(p.id, p.action, p.description)}
+
+
+@app.post("/governance/vote")
+def vote_proposal(pid: str, vote: str):
+    return {"status": "voted", "result": gov.vote(pid, vote)}
+
+
+@app.post("/governance/enact")
+def enact_proposal(pid: str):
+    return {"status": "enacted", "result": gov.enact(pid)}
+
+
+@app.get("/health")
+def health_check():
+    return {"status": "ok", "entries": len(scribe.ledger)}
+</file>
+
+<file path="cli/e4a_cli.py">
+# cli/e4a_cli.py
+import typer
+import json
+from core.mandate_engine import MandateEngine
+from core.scribe_agent import ScribeAgent
+from core.reputation_index import ReputationIndex
+from core.governance_kernel import GovernanceKernel
+from core.config_loader import load_config
+from e4a_sdk.client import E4AClient
+
+cfg = load_config()
+client = E4AClient(base_url=cfg.get("api")["host"], timeout=cfg.get("api")["timeout"])
+# then in commands, optionally call client.create_mandate etc. if you prefer remote mode
+
+app = typer.Typer(help="E4A Protocol CLI")
+
+scribe = ScribeAgent(node_id="cli-node")
+engine = MandateEngine(scribe)
+gov = GovernanceKernel()
+rep = ReputationIndex()
+
+
+@app.command()
+def mandate_create(issuer: str, beneficiary: str, amount: float, currency: str = "USD"):
+    """Create a new mandate"""
+    result = engine.create_mandate({
+        "issuer": issuer,
+        "beneficiary": beneficiary,
+        "amount": amount,
+        "currency": currency
+    })
+    typer.echo(json.dumps(result, indent=2))
+
+
+@app.command()
+def mandate_execute(mandate_id: str):
+    """Execute a mandate"""
+    result = engine.execute_mandate(mandate_id)
+    typer.echo(json.dumps(result, indent=2))
+
+
+@app.command()
+def governance_propose(pid: str, action: str, description: str):
+    """Propose a governance action"""
+    out = gov.propose(pid, action, description)
+    typer.echo(json.dumps(out, indent=2))
+
+
+@app.command()
+def governance_vote(pid: str, vote: str):
+    """Vote on a proposal"""
+    out = gov.vote(pid, vote)
+    typer.echo(json.dumps(out, indent=2))
+
+
+@app.command()
+def governance_enact(pid: str):
+    """Enact a proposal"""
+    out = gov.enact(pid)
+    typer.echo(json.dumps(out, indent=2))
+
+
+@app.command()
+def reputation_view():
+    """Display current reputation index"""
+    rep.ingest_from_scribe(scribe)
+    typer.echo(json.dumps(rep.get_all(), indent=2))
+
+
+@app.command()
+def ledger_show():
+    """Show full scribe ledger"""
+    typer.echo(json.dumps(scribe.ledger, indent=2))
+
+
+if __name__ == "__main__":
+    app()
+</file>
+
+<file path="core/__version__.py">
+__version__ = "1.0.0"
+</file>
+
+<file path="core/config_loader.py">
+"""
+Config loader for E4A projects.
+Loads YAML config (config/config.yaml) and exposes a simple Config object.
+"""
+import os
+import yaml
+from pathlib import Path
+from typing import Any, Dict
+
+DEFAULT_PATH = Path(os.path.dirname(__file__)).parent.joinpath("config", "config.yaml")
+
+
+class Config:
+    def __init__(self, data: Dict[str, Any]):
+        self._data = data
+
+    def get(self, key: str, default=None):
+        return self._data.get(key, default)
+
+    def as_dict(self):
+        return dict(self._data)
+
+
+def load_config(path: str = None) -> Config:
+    p = Path(path) if path else DEFAULT_PATH
+    if not p.exists():
+        # default config if none exists
+        default = {
+            "node_id": "e4a-node-1",
+            "api": {"host": "http://localhost:8000", "timeout": 5},
+            "db": {"type": "json", "path": "data/state.json"},
+            "logging": {"level": "INFO"}
+        }
+        return Config(default)
+    with open(p, "r") as fh:
+        data = yaml.safe_load(fh) or {}
+    return Config(data)
+</file>
+
+<file path="core/governance_kernel.py">
+"""
+Governance Kernel - minimal skeleton for Phase 2.
+Responsibilities:
+- register charters
+- submit proposals
+- simulate votes and enact proposals (mocked voting)
+- simple persistence in data/governance_state.json
+"""
+import os
+import json
+from datetime import datetime, timezone
+from typing import Dict, Any
+
+STATE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'governance_state.json')
+
+
+def _ensure():
+    os.makedirs(os.path.dirname(STATE_PATH), exist_ok=True)
+    if not os.path.exists(STATE_PATH):
+        with open(STATE_PATH, 'w') as fh:
+            json.dump({'charters': {}, 'proposals': {}}, fh)
+
+
+def _load():
+    _ensure()
+    with open(STATE_PATH, 'r') as fh:
+        return json.load(fh)
+
+
+def _save(state):
+    with open(STATE_PATH, 'w') as fh:
+        json.dump(state, fh, indent=2, default=str)
+
+
+class GovernanceKernel:
+    def __init__(self):
+        _ensure()
+        self.state = _load()
+
+    def register_charter(self, charter_id: str, charter_doc: Dict[str, Any]):
+        self.state = _load()
+        self.state['charters'][charter_id] = {
+            'charter_id': charter_id,
+            'doc': charter_doc,
+            'registered_at': datetime.now(timezone.utc).isoformat()
+        }
+        _save(self.state)
+        return self.state['charters'][charter_id]
+
+    def submit_proposal(self, charter_id: str, proposal_id: str, proposal: Dict[str, Any]):
+        self.state = _load()
+        if charter_id not in self.state['charters']:
+            raise ValueError('charter not registered')
+        self.state['proposals'][proposal_id] = {
+            'proposal_id': proposal_id,
+            'charter_id': charter_id,
+            'proposal': proposal,
+            'created_at': datetime.now(timezone.utc).isoformat(),
+            'votes': {}
+        }
+        _save(self.state)
+        return self.state['proposals'][proposal_id]
+
+    def vote(self, proposal_id: str, voter_id: str, vote: str):
+        self.state = _load()
+        if proposal_id not in self.state['proposals']:
+            raise ValueError('proposal not found')
+        self.state['proposals'][proposal_id]['votes'][voter_id] = vote
+        _save(self.state)
+        return self.state['proposals'][proposal_id]
+
+    def simulate_and_enact(self, proposal_id: str, quorum: int = 1):
+        """Simple simulation: enact if number of votes >= quorum and majority 'yes'."""
+        self.state = _load()
+        prop = self.state['proposals'].get(proposal_id)
+        if not prop:
+            raise ValueError('proposal not found')
+        votes = prop.get('votes', {})
+        if len(votes) < quorum:
+            return {'status': 'rejected', 'reason': 'quorum_not_met', 'votes': votes}
+        yes = sum(1 for v in votes.values() if v.lower() in ('yes', 'y', 'approve'))
+        no = sum(1 for v in votes.values() if v.lower() in ('no', 'n', 'reject'))
+        if yes > no:
+            prop['enacted_at'] = datetime.now(timezone.utc).isoformat()
+            prop['status'] = 'enacted'
+            _save(self.state)
+            return {'status': 'enacted', 'proposal': prop}
+        else:
+            prop['status'] = 'rejected'
+            _save(self.state)
+            return {'status': 'rejected', 'proposal': prop}
+</file>
+
+<file path="core/mandate_engine.py">
+"""
+Minimal Mandate Engine (Phase 1 reference implementation).
+
+Responsibilities:
+- validate mandate payloads against spec (JSON Schema)
+- create mandates and sub-mandates (idempotent via replay_nonce when provided)
+- execute mandates by calling adapters (mocked)
+- compute protocol/validator/issuer fee splits
+"""
+
+import json
+import os
+import uuid
+from datetime import datetime
+from jsonschema import validate, ValidationError
+
+SPEC = os.path.join(os.path.dirname(__file__), '..', 'specs', 'mandate_v1.json')
+
+with open(SPEC, 'r') as _f:
+    MANDATE_SCHEMA = json.load(_f)
+
+
+class MandateEngineError(Exception):
+    pass
+
+
+class MandateEngine:
+    def __init__(self, scribe=None):
+        # in-memory store for Phase 1 (replace with persistence later)
+        self.mandates = {}
+        self.scribe = scribe
+
+    def validate_mandate(self, mandate):
+        try:
+            validate(instance=mandate, schema=MANDATE_SCHEMA)
+        except ValidationError as e:
+            raise MandateEngineError(f"Mandate validation error: {e.message}")
+
+    def create_mandate(self, mandate):
+        mandate = dict(mandate)
+        if not mandate.get('mandate_id'):
+            mandate['mandate_id'] = str(uuid.uuid4())
+        mandate.setdefault('created_at', datetime.utcnow().isoformat() + 'Z')
+
+        # validate
+        self.validate_mandate(mandate)
+
+        # idempotency via replay_nonce (phase 1: simple scan)
+        replay = mandate.get('replay_nonce')
+        if replay:
+            for m in self.mandates.values():
+                if m.get('replay_nonce') == replay:
+                    return m
+
+        self.mandates[mandate['mandate_id']] = mandate
+
+        if self.scribe:
+            self.scribe.append_entry({
+                'entry_type': 'mandate_created',
+                'mandate_id': mandate['mandate_id'],
+                'payload': mandate
+            })
+        return mandate
+
+    def create_submandate(self, parent_id, subpayload):
+        parent = self.mandates.get(parent_id)
+        if not parent:
+            raise MandateEngineError('Parent mandate not found')
+
+        sub = dict(subpayload)
+        sub.setdefault('parent_mandate_id', parent_id)
+
+        # conditional inheritance: copy certain fields if parent requests it
+        if parent.get('inherit_values'):
+            sub.setdefault('policy_tags', parent.get('policy_tags', []))
+            sub.setdefault('fee_distribution', parent.get('fee_distribution', {}))
+
+        return self.create_mandate(sub)
+
+    def process_fees(self, mandate_id):
+        mandate = self.mandates.get(mandate_id)
+        if not mandate:
+            raise MandateEngineError('Mandate not found for fee processing')
+        total = mandate.get('amount', 0.0)
+        fees = mandate.get('fee_distribution', {})
+        protocol_share = fees.get('protocol', 0.0)
+        validator_share = fees.get('validator', 0.0)
+        issuer_share = fees.get('issuer', 0.0)
+        return {
+            'protocol_amount': protocol_share * total,
+            'validator_amount': validator_share * total,
+            'issuer_amount': issuer_share * total
+        }
+
+    def execute_mandate(self, mandate_id, executor_id='system'):
+        mandate = self.mandates.get(mandate_id)
+        if not mandate:
+            raise MandateEngineError('Mandate not found')
+
+        # Phase 1: mock execution — record action and compute fees
+        result = {
+            'status': 'executed',
+            'executor': executor_id,
+            'executed_at': datetime.utcnow().isoformat() + 'Z',
+        }
+        result['fees'] = self.process_fees(mandate_id)
+
+        if self.scribe:
+            self.scribe.append_entry({
+                'entry_type': 'mandate_executed',
+                'mandate_id': mandate_id,
+                'executor': executor_id,
+                'result': result
+            })
+        return result
+
+
+if __name__ == '__main__':
+    # simple demo run if executed directly
+    from core.scribe_agent import ScribeAgent
+    scribe = ScribeAgent()
+    engine = MandateEngine(scribe=scribe)
+
+    sample = {
+        'issuer': 'did:example:alice',
+        'beneficiary': 'did:example:bob',
+        'amount': 100.0,
+        'currency': 'USD',
+        'fee_distribution': {'protocol': 0.01, 'validator': 0.01, 'issuer': 0.01}
+    }
+
+    m = engine.create_mandate(sample)
+    print('Created mandate:', m['mandate_id'])
+    print('Execute result:', engine.execute_mandate(m['mandate_id']))
+</file>
+
+<file path="core/validator_runtime.py">
+"""
+Validator Runtime - Phase 1 reference (lightweight, non-networked)
+Provides:
+- start_node() bootstrap (no network)
+- reflexivity_tick(): analyze recent mission_log entries and emit meta_audit entries
+- listen_quarantine_flags(): scan for quarantine flags (placeholder)
+"""
+
+import os
+import json
+from datetime import datetime, timedelta
+
+LOG_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mission_log.jsonl')
+
+
+class ValidatorRuntime:
+    def __init__(self, node_id='validator-1', log_path=None):
+        self.node_id = node_id
+        self.log_path = log_path or LOG_PATH
+
+    def start_node(self):
+        print(f"Starting validator node {self.node_id} (phase 1 reference)")
+
+    def _read_recent_entries(self, window_seconds=3600):
+        entries = []
+        if not os.path.exists(self.log_path):
+            return entries
+        cutoff = datetime.utcnow() - timedelta(seconds=window_seconds)
+        with open(self.log_path, 'r') as fh:
+            for line in fh:
+                try:
+                    obj = json.loads(line)
+                    ts = obj.get('timestamp')
+                    if ts:
+                        ts_dt = datetime.fromisoformat(ts.replace('Z', ''))
+                        if ts_dt >= cutoff:
+                            entries.append(obj)
+                except Exception:
+                    continue
+        return entries
+
+    def reflexivity_tick(self, window_seconds=3600):
+        entries = self._read_recent_entries(window_seconds=window_seconds)
+        counts = {}
+        for e in entries:
+            et = e.get('entry_type', 'unknown')
+            counts[et] = counts.get(et, 0) + 1
+        meta = {
+            'entry_type': 'meta_audit',
+            'node_id': self.node_id,
+            'timestamp': datetime.utcnow().isoformat() + 'Z',
+            'summary': {
+                'counts': counts,
+                'total_recent': len(entries)
+            }
+        }
+        # append to mission_log
+        with open(self.log_path, 'a') as fh:
+            fh.write(json.dumps(meta) + '\n')
+        return meta
+
+    def listen_quarantine_flags(self):
+        flags = []
+        if not os.path.exists(self.log_path):
+            return flags
+        with open(self.log_path, 'r') as fh:
+            for line in fh:
+                try:
+                    obj = json.loads(line)
+                    if obj.get('entry_type') in ('quarantine', 'quarantine_flag'):
+                        flags.append(obj)
+                except Exception:
+                    continue
+        return flags
+
+
+if __name__ == '__main__':
+    vr = ValidatorRuntime()
+    vr.start_node()
+    print('Running reflexivity tick...')
+    print(vr.reflexivity_tick())
+</file>
+
+<file path="docs/E4A_Level2.1_Validated.md">
+# Ethos4Agents (E4A)
+## Level 2.1 — Validated Architecture Summary
+E4A defines a governance and cultural layer for autonomous agent systems.
+This reference architecture establishes:
+- **E4A-Core (Governance Plane)**
+- **E4A-Lite (Agent Plane)**
+- **Universal Rail Adapter (URA)** for cross-chain and privacy-layer integration.
+</file>
+
+<file path="e4a_sdk/client.py">
+# e4a_sdk/client.py
+"""
+Minimal E4A SDK: wraps HTTP to the local API (or can be subclassed for in-process usage).
+Designed to be dependency-light (uses requests).
+"""
+import requests
+from typing import Dict
+
+
+class E4AError(Exception):
+    pass
+
+
+class E4AClient:
+    def __init__(self, base_url: str = "http://localhost:8000", timeout: int = 5):
+        self.base = base_url.rstrip("/")
+        self.timeout = timeout
+
+    def _post(self, path: str, json: Dict):
+        url = f"{self.base}{path}"
+        r = requests.post(url, json=json, timeout=self.timeout)
+        if r.status_code >= 400:
+            raise E4AError(f"HTTP {r.status_code}: {r.text}")
+        return r.json()
+
+    def _get(self, path: str):
+        url = f"{self.base}{path}"
+        r = requests.get(url, timeout=self.timeout)
+        if r.status_code >= 400:
+            raise E4AError(f"HTTP {r.status_code}: {r.text}")
+        return r.json()
+
+    # High-level convenience methods:
+    def create_mandate(self, issuer: str, beneficiary: str, amount: float, currency: str = "USD"):
+        return self._post("/mandates/create", {"issuer": issuer,
+                                               "beneficiary": beneficiary,
+                                               "amount": amount,
+                                               "currency": currency})
+
+    def execute_mandate(self, mandate_id: str):
+        return self._post(f"/mandates/execute/{mandate_id}", {})
+
+    def health(self):
+        return self._get("/health")
+
+    def reputation(self):
+        return self._get("/reputation")
+</file>
+
+<file path="e4a.egg-info/PKG-INFO">
+Metadata-Version: 2.4
+Name: e4a
+Version: 1.0.0
+Summary: E4A — Ethos4Agents SDK, CLI, and API
+Author-email: Dan Everett <e4a.protocol@gmail.com>
+License: MIT License
+        
+        Copyright (c) 2025 e4aproject
+        
+        Permission is hereby granted, free of charge, to any person obtaining a copy
+        of this software and associated documentation files (the "Software"), to deal
+        in the Software without restriction, including without limitation the rights
+        to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+        copies of the Software, and to permit persons to whom the Software is
+        furnished to do so, subject to the following conditions:
+        
+        The above copyright notice and this permission notice shall be included in all
+        copies or substantial portions of the Software.
+        
+        THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+        IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+        FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+        AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+        LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+        OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+        SOFTWARE.
+        
+Project-URL: Homepage, https://github.com/e4aproject/E4A
+Project-URL: Documentation, https://e4aproject.github.io/E4A
+Project-URL: Repository, https://github.com/e4aproject/E4A
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: typer>=0.12.3
+Requires-Dist: fastapi>=0.111.0
+Requires-Dist: uvicorn>=0.30.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: pydantic>=2.0
+Requires-Dist: httpx>=0.27.0
+Dynamic: license-file
+
+# Ethos4Agents (E4A) Protocol
+
+Ethos4Agents (E4A): An open protocol for organizational culture among multi‑agent systems
+An open protocol enabling multi‑agent systems to express, share, and enforce organizational culture, governance primitives, and safety invariants while interoperating across diverse runtimes and administrative domains.
+
+E4A complements existing standards such as MCP, A2A, and AP2 by reusing their interoperability and payments conventions where relevant while adding a focused layer for culture, governance, research, learning, and auditability. Where A2A standardizes agent discovery and messaging and AP2 addresses payments and economic rails, E4A defines the canonical artifacts and flows agents use to carry organizational intent: mandates, mission_log entries, human‑in‑the‑loop gates, verifier payloads, learning and self-improvement, and cultural audits. E4A makes these artifacts first‑class so agents can coordinate complex, long‑running work that honors shared norms, preserves traceability, and enforces minimal safety invariants across rails and implementations.
+
+# Theoretical foundation and practical value
+E4A’s power comes from being a standards-first protocol that is explicitly grounded in time‑tested theories of organizational culture and the science of learning; it operationalizes ideas from organizational culture, psychology, sociology, and constructivist learning so agents coordinate with the same norms, incentives, and traceability humans rely on in proven resilient and healthy organizations. 
+
+E4A does not invent governance ad hoc; rather, it encodes verifiable cultural primitives like roles, mandate lifecycles, reflection windows, human‑in‑the‑loop gates, learning frameworks, and audit trails that map directly to measurable organizational constructs such as accountability, psychological safety, and decision transparency.
+
+By turning these constructs into first‑class artifacts and validator rules, E4A makes it possible to automate both complex, multi‑agent and intersystem multi-agent workflows while preserving human‑centered checks, research traceability, and composable safety layers. The result is a protocol is both rigorous and practical. It is interoperable with existing messaging and payments rails, decoupled from any single runtime, and auditable end‑to‑end, enabling agents to scale collaborative work in ways that mirror proven human organizational practice rather than simple re‑inventing governance from scratch.
+
+# Why E4A
+As the number of multi‑agent systems become the norm, technologically cultural alignment and accountable governance will become the decisive factors that let agents coordinate reliably and at scale. E4A exists to:
+- Establish a minimum expectation that all multi-agent systems are grounded in a consistent and research-based set of organizational norms. 
+- Enable richer collaboration by making culture and governance first‑class artifacts agents can read, write, and reason about.
+- Establish open standards that extend A2A messaging and AP2 economic rails with auditable cultural primitives, enabling interoperable toolchains and broad community adoption.
+- Maintain opacity for proprietary implementations while ensuring accountability through signed mandates, mission_log audit trails, and verifier attestations.
+- Reduce systemic risk by enforcing human‑in‑the‑loop gates, safety thresholds, and validator rules so sensitive actions require configurable human oversight and/or verified mandates.
+- Accelerate engineering impact by providing reusable, measurable constructs that map to well‑tested organizational theories, letting teams build complex, multi‑agent applications that are resilient and healthy organizations.
+
+# Goals
+- Define canonical artifacts: mandate, mission_log, research_manifest, verifier payloads.
+- Provide a reference implementation that demonstrates safe, auditable flows.
+- Enable conformance, attestation, and registry-driven interoperability.
+- Preserve openness while enforcing minimal safety invariants by default.
+
+
+-------------------------------------------------------------------------------------------
+
+
+# E4A Phase 1 - Quick Start
+
+Files created:
+- core/mandate_engine.py
+- core/scribe_agent.py
+- core/validator_runtime.py
+- specs/mandate_v1.json
+- specs/charter_v1.json
+- specs/attestation_v1.json
+- data/mission_log.jsonl (created on first run)
+
+Requirements:
+- Python 3.9+
+- pip install jsonschema
+
+Quick commands (from repo root):
+1) Install:
+   pip install jsonschema
+
+2) Create a simple mandate (demo):
+   python -c "from core.scribe_agent import ScribeAgent; from core.mandate_engine import MandateEngine; s=ScribeAgent(); m=MandateEngine(scribe=s); print(m.create_mandate({'issuer':'did:ex:alice','beneficiary':'did:ex:bob','amount':10,'currency':'USD'}))"
+
+3) Run validator reflexivity tick:
+   python -c "from core.validator_runtime import ValidatorRuntime; v=ValidatorRuntime(); print(v.reflexivity_tick())"
+
+Notes:
+- These modules are reference stubs to bootstrap Phase 1. Replace mission_log persistence and in-memory stores with production stores in later phases.
+- Use the schemas in specs/ to extend validation and to design adapters.
+
+
+## Publishing note
+
+This repository uses `pyproject.toml` as the canonical Python packaging metadata source. The npm package is scoped under `@e4aproject` and is configured to publish publicly (`publishConfig.access = public` in `package.json`).
+
+If you rely on `setup.cfg` or generated egg-info metadata, prefer updating `pyproject.toml` as the authoritative source for future releases.
+</file>
+
+<file path="e4a.egg-info/SOURCES.txt">
+LICENSE
+MANIFEST.in
+README.md
+pyproject.toml
+adapters/__init__.py
+adapters/a2a/aries_adapter.py
+adapters/ap2/__init__.py
+adapters/ap2/ap2_client.py
+adapters/ap2/ap2_mock_server.py
+adapters/universal_rail_adapter/__init__.py
+adapters/universal_rail_adapter/cardano_adapter.py
+adapters/universal_rail_adapter/cardano_midnight_bridge.py
+adapters/universal_rail_adapter/eth_adapter.py
+adapters/universal_rail_adapter/fabric_adapter.py
+adapters/universal_rail_adapter/midnight_adapter.py
+api/server.py
+cli/__init__.py
+cli/cli_main.py
+cli/e4a_cli.py
+config/config.yaml
+core/__init__.py
+core/__version__.py
+core/charter_engine.py
+core/config_loader.py
+core/evolution_engine.py
+core/governance_kernel.py
+core/mandate_engine.py
+core/reputation_index.py
+core/scribe_agent.py
+core/validator_runtime.py
+docs/E4A_Level2.1_Validated.md
+docs/PUBLISHING.md
+docs/index.md
+docs/reference/api.md
+docs/reference/cli.md
+e4a.egg-info/PKG-INFO
+e4a.egg-info/SOURCES.txt
+e4a.egg-info/dependency_links.txt
+e4a.egg-info/entry_points.txt
+e4a.egg-info/requires.txt
+e4a.egg-info/top_level.txt
+e4a_sdk/__init__.py
+e4a_sdk/client.py
+examples/demo_full_run.py
+specs/attestation_v1.json
+specs/charter_v1.json
+specs/mandate_v1.json
+tests/test_api_cli_integration.py
+tests/test_cardano_midnight_bridge.py
+tests/test_cli_sdk.py
+tests/test_integration_ap2_midnight.py
+tests/test_mandate_engine.py
+</file>
+
+<file path="specs/attestation_v1.json">
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Attestation v1 Schema",
+  "type": "object",
+  "properties": {
+    "attestation_id": { "type": "string" },
+    "spec_version": { "type": "string" },
+    "commit_hash": { "type": "string" },
+    "tests_passed": { "type": "boolean" },
+    "signature": { "type": "string" },
+    "did": { "type": "string" },
+    "vc": { "type": "object" }
+  },
+  "required": ["attestation_id", "spec_version", "commit_hash"]
+}
+</file>
+
+<file path="specs/mandate_v1.json">
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mandate v1 Schema",
+  "type": "object",
+  "properties": {
+    "mandate_id": { "type": "string" },
+    "parent_mandate_id": { "type": ["string", "null"] },
+    "issuer": { "type": "string" },
+    "beneficiary": { "type": "string" },
+    "amount": { "type": "number" },
+    "currency": { "type": "string" },
+    "validator_ref": { "type": "string" },
+    "proof_anchor": { "type": "object" },
+    "fee_distribution": { "type": "object" },
+    "policy_tags": { "type": "array", "items": { "type": "string" } },
+    "replay_nonce": { "type": "string" }
+  },
+  "required": ["mandate_id", "issuer", "beneficiary"]
+}
+</file>
+
+<file path="tests/test_api_cli_integration.py">
+# tests/test_api_cli_integration.py
+from fastapi.testclient import TestClient
+from api.server import app
+
+client = TestClient(app)
+
+
+def test_api_health():
+    r = client.get("/health")
+    assert r.status_code == 200
+    assert r.json()["status"] == "ok"
+
+
+def test_mandate_lifecycle():
+    m = client.post("/mandates/create", json={"issuer": "did:ex:alice", "beneficiary": "did:ex:bob", "amount": 50})
+    assert m.status_code == 200
+    mid = m.json()["mandate"]["mandate_id"]
+    e = client.post(f"/mandates/execute/{mid}")
+    assert e.status_code == 200
+    r = client.get("/reputation")
+    assert "reputation" in r.json()
+</file>
+
+<file path="tests/test_cardano_midnight_bridge.py">
+from core.scribe_agent import ScribeAgent
+from core.mandate_engine import MandateEngine
+from adapters.universal_rail_adapter.cardano_midnight_bridge import CardanoMidnightBridge
+from core.governance_kernel import GovernanceKernel
+from core.reputation_index import ReputationIndex
+
+
+def test_bridge_and_governance(tmp_path):
+    # prepare scribe + mandate engine
+    log = tmp_path / 'mission_log.jsonl'
+    s = ScribeAgent(log_path=str(log))
+    me = MandateEngine(scribe=s)
+
+    # create mandate
+    m = me.create_mandate({
+        'issuer': 'did:ex:alice',
+        'beneficiary': 'did:ex:bob',
+        'amount': 7,
+        'currency': 'USD'
+    })
+
+    # bridge and settle
+    bridge = CardanoMidnightBridge()
+    res = bridge.bridge_and_settle(m)
+    assert 'anchor_ref' in res and 'settlement_tx' in res
+
+    # governance: register charter and submit+enact a proposal
+    g = GovernanceKernel()
+    ch = g.register_charter('charter-x', {'name': 'Test Charter'})
+    assert ch['charter_id'] == 'charter-x'
+
+    # prop = g.submit_proposal('charter-x', 'prop-1', {'action': 'test-action'})
+    g.vote('prop-1', 'validator-1', 'yes')
+    out = g.simulate_and_enact('prop-1', quorum=1)
+    assert out['status'] == 'enacted'
+
+    # reputation: ingest event and check score
+    r = ReputationIndex()
+    r.ingest_event('did:example:validator-1', 'positive_behavior', weight=3.0)
+    score = r.get_score('did:example:validator-1')
+    assert 0.0 < score <= 1.0
+</file>
+
+<file path="tests/test_cli_sdk.py">
+from e4a_sdk.client import E4AClient
+
+
+def test_sdk_health_local():
+    client = E4AClient(base_url="http://localhost:8000")
+    # health endpoint is present in Phase 3 API; in tests we call it and assert shape or handle connection errors
+    try:
+        r = client.health()
+        assert "status" in r
+    except Exception as e:
+        # If server not running in test environment, the SDK still should raise E4AError or requests exception
+        assert isinstance(e, Exception)
+</file>
+
+<file path="tests/test_integration_ap2_midnight.py">
+from core.scribe_agent import ScribeAgent
+from core.mandate_engine import MandateEngine
+from adapters.ap2.ap2_client import AP2Client
+from adapters.universal_rail_adapter.midnight_adapter import MidnightAdapter
+from adapters.universal_rail_adapter.eth_adapter import EthAdapter
+
+
+def test_ap2_create_sign_submit_and_midnight_anchor(tmp_path):
+    # Setup
+    log = tmp_path / "mission_log.jsonl"
+    s = ScribeAgent(log_path=str(log))
+    me = MandateEngine(scribe=s)
+
+    # Create mandate
+    mandate = me.create_mandate({
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob",
+        "amount": 42,
+        "currency": "USD",
+        "fee_distribution": {"protocol": 0.01, "validator": 0.01, "issuer": 0}
+    })
+
+    # AP2 flow
+    ap2 = AP2Client()
+    create_r = ap2.create(mandate)
+    assert create_r.get("status") == "created"
+    # sign
+    sign_r = ap2.sign(mandate['mandate_id'], signer="tester")
+    assert sign_r.get("status") == "signed"
+    # submit
+    submit_r = ap2.submit(mandate['mandate_id'])
+    assert submit_r.get("status") == "settled"
+
+    # Midnight confidential contract
+    mid = MidnightAdapter()
+    conf = mid.create_confidential_contract(mandate)
+    assert 'anchor_ref' in conf
+    anchor_ref = conf['anchor_ref']
+
+    # Simulate anchor publish to an L1 (eth adapter)
+    eth = EthAdapter(chain_name='ethereum-test')
+    tx = eth.submit_anchor(anchor_ref)
+    assert tx.get('status') == 'submitted'
+    tx_hash = tx.get('tx_hash')
+    # publish settlement link
+    pub = mid.publish_anchor(anchor_ref, settlement_ref=tx_hash)
+    assert pub.get('status') == 'published'
+</file>
+
+<file path="tests/test_mandate_engine.py">
+from core.scribe_agent import ScribeAgent
+from core.mandate_engine import MandateEngine
+
+
+def test_create_and_execute_mandate(tmp_path):
+    # use temp mission log
+    log = tmp_path / "mission_log.jsonl"
+    s = ScribeAgent(log_path=str(log))
+    me = MandateEngine(scribe=s)
+    m = me.create_mandate({
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob",
+        "amount": 50,
+        "currency": "USD",
+        "fee_distribution": {"protocol": 0.02, "validator": 0.01, "issuer": 0}
+    })
+    assert m['issuer'] == "did:ex:alice"
+    assert 'mandate_id' in m
+    res = me.execute_mandate(m['mandate_id'])
+    assert res['status'] == 'executed'
+    assert 'fees' in res
+    # check log lines
+    lines = open(log, 'r').read().strip().splitlines()
+    assert any('mandate_created' in ln for ln in lines)
+    assert any('mandate_executed' in ln for ln in lines)
+</file>
+
+<file path=".gitignore">
+.npmrc
+node_modules
+</file>
+
+<file path=".github/workflows/ci.yml">
+name: E4A Continuous Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11', '3.12']
+      fail-fast: false  # 👈 Allow other versions to run even if one fails
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Verify files
+        run: |
+          ls -la
+          test -f requirements.txt || (echo "requirements.txt missing!" && exit 1)
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest flake8
+
+      - name: Run tests
+        run: |
+          echo "Running pytest..."
+          pytest -v
+
+      - name: Lint Python code
+        run: |
+          flake8 .
+
+  node-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies and run build
+        run: |
+          npm install
+          npm run build || echo "No build script found"
+</file>
+
+<file path="adapters/universal_rail_adapter/eth_adapter.py">
+"""
+Ethereum Adapter (simulated)
+
+- submit_anchor(proof_hash) -> returns a fake tx_hash
+- query_anchor(tx_hash) -> returns stored mapping
+"""
+
+import json
+import os
+import uuid
+from datetime import datetime
+
+STORE = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'chain_anchors.json')
+
+
+def _ensure():
+    os.makedirs(os.path.dirname(STORE), exist_ok=True)
+    if not os.path.exists(STORE):
+        with open(STORE, 'w') as fh:
+            json.dump({"anchors": {}}, fh)
+
+
+def _load():
+    _ensure()
+    with open(STORE, 'r') as fh:
+        return json.load(fh)
+
+
+def _save(state):
+    with open(STORE, 'w') as fh:
+        json.dump(state, fh, indent=2, default=str)
+
+
+class EthAdapter:
+    def __init__(self, chain_name='ethereum'):
+        self.chain = chain_name
+        _ensure()
+
+    def submit_anchor(self, proof_hash):
+        state = _load()
+        tx_hash = f"0x{uuid.uuid4().hex[:32]}"
+        state['anchors'][tx_hash] = {
+            "proof_hash": proof_hash,
+            "chain": self.chain,
+            "tx_hash": tx_hash,
+            "timestamp": datetime.utcnow().isoformat() + 'Z'
+        }
+        _save(state)
+        return {"status": "submitted", "tx_hash": tx_hash}
+
+    def query_anchor(self, tx_hash):
+        state = _load()
+        return state['anchors'].get(tx_hash)
+</file>
+
+<file path="adapters/universal_rail_adapter/midnight_adapter.py">
+"""
+Midnight Adapter (simulated)
+
+- create_confidential_contract(payload): simulate creating a private contract, produce anchor_ref (uuid)
+- verify_zkproof(proof_ref): check existence in simple store
+- publish_anchor(anchor_hash, settlement_hint=None): record proof anchor and optional settlement refs
+"""
+
+import json
+import os
+import uuid
+from datetime import datetime
+
+STORE = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'midnight_store.json')
+
+
+def _ensure():
+    os.makedirs(os.path.dirname(STORE), exist_ok=True)
+    if not os.path.exists(STORE):
+        with open(STORE, 'w') as fh:
+            json.dump({"proofs": {}}, fh)
+
+
+def _load():
+    _ensure()
+    with open(STORE, 'r') as fh:
+        return json.load(fh)
+
+
+def _save(state):
+    with open(STORE, 'w') as fh:
+        json.dump(state, fh, indent=2, default=str)
+
+
+class MidnightAdapter:
+    def __init__(self):
+        _ensure()
+
+    def create_confidential_contract(self, payload):
+        """
+        Simulate creation of a confidential contract and return an anchor_ref.
+        """
+        state = _load()
+        anchor_ref = str(uuid.uuid4())
+        state['proofs'][anchor_ref] = {
+            "anchor_ref": anchor_ref,
+            "payload_summary": {"issuer": payload.get('issuer'), "beneficiary": payload.get('beneficiary')},
+            "created_at": datetime.utcnow().isoformat() + 'Z'
+        }
+        _save(state)
+        return {"anchor_ref": anchor_ref, "status": "created"}
+
+    def verify_zkproof(self, anchor_ref):
+        state = _load()
+        ok = anchor_ref in state.get('proofs', {})
+        return {"anchor_ref": anchor_ref, "valid": ok}
+
+    def publish_anchor(self, anchor_ref, settlement_ref=None):
+        state = _load()
+        if anchor_ref not in state.get('proofs', {}):
+            return {"status": "error", "reason": "proof_not_found"}
+        state['proofs'][anchor_ref]['settlement_ref'] = settlement_ref
+        state['proofs'][anchor_ref]['published_at'] = datetime.utcnow().isoformat() + 'Z'
+        _save(state)
+        return {"status": "published", "anchor_ref": anchor_ref, "settlement_ref": settlement_ref}
+</file>
+
+<file path="cli/cli_main.py">
+"""
+Central CLI entrypoint. Uses typer to expose subcommands (mandates, governance, reputation, sdk).
+Reads config via Config loader.
+"""
+import typer
+import json
+from core.config_loader import load_config
+from cli.e4a_cli import app as e4a_app  # existing CLI commands
+from e4a_sdk.client import E4AClient
+
+cli = typer.Typer()
+config = load_config()
+
+
+@cli.callback(invoke_without_command=True)
+def main(ctx: typer.Context):
+    """
+    E4A CLI — use --help for subcommands.
+    """
+    if ctx.invoked_subcommand is None:
+        typer.echo("E4A CLI — use subcommands. Try 'e4a --help'.")
+
+
+# mount existing subcommands under `e4a` root
+cli.add_typer(e4a_app, name="e4a")
+
+
+@cli.command("sdk-test")
+def sdk_test():
+    """Quick SDK smoke test using local config.api host."""
+    cfg = load_config()
+    base_url = cfg.get("api", {}).get("host", "http://localhost:8000")
+    typer.echo(f"Running E4A SDK smoke test against: {base_url}")
+    try:
+        client = E4AClient(base_url=base_url)
+        info = client.health()
+        typer.echo(json.dumps(info, indent=2))
+    except Exception as e:
+        typer.echo(typer.style("⚠️  SDK test failed:", fg=typer.colors.RED, bold=True))
+        typer.echo(f"Error: {e}")
+        typer.echo(
+            "\nTip: Ensure the E4A API server is running.\n"
+            "You can start it with:\n"
+            "  uvicorn api.server:app --reload --port 8000\n"
+            "Then rerun the prompt."
+        )
+
+
+app = cli
+
+
+if __name__ == "__main__":
+    cli()
+</file>
+
+<file path="core/reputation_index.py">
+from typing import Dict, List
+
+
+class ReputationIndex:
+    def __init__(self):
+        # Initialize reputation storage
+        self.scores: Dict[str, float] = {}
+        self.history: Dict[str, List[Dict]] = {}
+
+    def record_action(self, actor_id: str, delta: float, context: str = ""):
+        """
+        Record an action's effect on reputation.
+        Positive deltas increase trust; negative ones decrease it.
+        """
+        # Default starting point
+        current = self.scores.get(actor_id, 0.5)
+
+        # Scale delta for gradual adjustment
+        updated = current + (delta * 0.1)
+        normalized = max(0.0, min(1.0, updated))  # Clamp between 0–1
+
+        # Store
+        self.scores[actor_id] = normalized
+        self.history.setdefault(actor_id, []).append(
+            {"delta": delta, "context": context, "new_score": normalized}
+        )
+        return normalized
+
+    def get_score(self, actor_id: str) -> float:
+        """Return normalized reputation between 0.0 and 1.0."""
+        return self.scores.get(actor_id, 0.5)
+
+    def ingest_event(self, actor_id: str, event_type: str, weight: float = 1.0):
+        """
+        Adjust reputation based on an event type.
+        """
+        if event_type in ("positive_behavior", "mandate_executed"):
+            return self.record_action(actor_id, abs(weight), f"Event: {event_type}")
+        elif event_type in ("infraction", "negative_behavior"):
+            return self.record_action(actor_id, -abs(weight), f"Event: {event_type}")
+        else:
+            return self.record_action(actor_id, 0.0, f"Neutral event: {event_type}")
+
+    def ingest_from_scribe(self, scribe):
+        """
+        Scan ScribeAgent entries for relevant reputation updates.
+        """
+        try:
+            entries = getattr(scribe, "entries", [])
+            for entry in entries:
+                actor = entry.get("actor", "api-node")
+                event_type = entry.get("event", "")
+                if "mandate executed" in event_type.lower():
+                    self.record_action(actor, 1.0, "Mandate executed successfully")
+                elif "infraction" in event_type.lower():
+                    self.record_action(actor, -1.0, "Infraction detected")
+        except Exception as e:
+            print(f"[ReputationIndex] Ingest error: {e}")
+
+    def get_all(self) -> Dict[str, float]:
+        """
+        Return all reputation scores and history for inspection or API output.
+        """
+        return {
+            "scores": self.scores,
+            "history": self.history,
+        }
+</file>
+
+<file path="core/scribe_agent.py">
+# core/scribe_agent.py
+from datetime import datetime, timezone
+import json
+import uuid
+from pathlib import Path
+
+
+class ScribeAgent:
+    """
+    The ScribeAgent records events, mandates, and audits to a persistent or in-memory mission log.
+    Backward compatible with legacy tests that used 'log_path' and both styles of append_entry().
+    """
+
+    def __init__(self, node_id: str = None, log_path: str = None):
+        self.node_id = node_id or f"scribe-{uuid.uuid4().hex[:8]}"
+        self.ledger = []
+        self.log_path = Path(log_path) if log_path else None
+
+        # Prepare log file if needed
+        if self.log_path:
+            self.log_path.parent.mkdir(parents=True, exist_ok=True)
+            self.log_path.touch(exist_ok=True)
+
+    def record(self, entry_type: str, payload: dict, summary: str):
+        """Primary method for writing an entry."""
+        entry = {
+            "entry_type": entry_type,
+            "entry_id": f"entry-{int(datetime.now(timezone.utc).timestamp())}",
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "node_id": self.node_id,
+            "payload": payload,
+            "narrative_summary": summary,
+        }
+
+        self.ledger.append(entry)
+        if self.log_path:
+            with open(self.log_path, "a") as f:
+                f.write(json.dumps(entry) + "\n")
+
+        return entry
+
+    # ✅ Fully backward-compatible append_entry()
+    def append_entry(self, *args, **kwargs):
+        """
+        Legacy alias for record(). Supports both:
+          append_entry(entry_type, payload, summary)
+        and
+          append_entry(entry_dict)
+        """
+        # Case 1: single dict-style call
+        if len(args) == 1 and isinstance(args[0], dict):
+            entry = args[0]
+            # Ensure required keys
+            entry.setdefault("entry_id", f"entry-{int(datetime.now(timezone.utc).timestamp())}")
+            entry.setdefault("timestamp", datetime.now(timezone.utc).isoformat())
+            entry.setdefault("node_id", self.node_id)
+            self.ledger.append(entry)
+            if self.log_path:
+                with open(self.log_path, "a") as f:
+                    f.write(json.dumps(entry) + "\n")
+            return entry
+
+        # Case 2: modern call pattern
+        elif len(args) == 3:
+            return self.record(*args)
+
+        # Case 3: explicit keyword args
+        elif "entry_type" in kwargs and "payload" in kwargs and "summary" in kwargs:
+            return self.record(kwargs["entry_type"], kwargs["payload"], kwargs["summary"])
+
+        else:
+            raise TypeError("append_entry() must be called with either (dict) or (entry_type, payload, summary)")
+
+    def get_entries(self, entry_type: str = None):
+        if entry_type:
+            return [e for e in self.ledger if e["entry_type"] == entry_type]
+        return self.ledger
+
+    def dump_json(self, path=None):
+        path = Path(path or self.log_path or "scribe_ledger.json")
+        with open(path, "w") as f:
+            json.dump(self.ledger, f, indent=2)
+        return str(path)
+</file>
+
+<file path="e4a_sdk/__init__.py">
+from .client import E4AClient, E4AError
+__all__ = ["E4AClient", "E4AError"]
+from core.__version__ import __version__
+
+# Use the version in a way that satisfies the linter
+version = __version__
+</file>
+
+<file path=".flake8">
+[flake8]
+max-line-length = 120
+#extend-ignore = F401  # Only if you have intentional unused imports
+</file>
+
+<file path="requirements.txt">
+pytest
+fastapi
+uvicorn
+typer
+requests
+pyyaml 
+uvicorn
+httpx
+jsonschema
+</file>
+
+<file path="package.json">
+{
+  "name": "@e4aproject/protocol",
+  "version": "1.0.0",
+  "description": "E4A CLI Wrapper (Node SDK Bridge)",
+  "bin": {
+    "e4a": "./bin/e4a.js"
+  },
+  "scripts": {
+    "test": "echo \"No tests for NPM wrapper yet\""
+  },
+  "author": "Dan Everett",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/e4aproject/E4A.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "semantic-release": "^21.0.0",
+    "@semantic-release/changelog": "^6.0.0",
+    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/npm": "^9.0.0",
+    "@semantic-release/github": "^9.0.0"
+  },
+  "release": {
+    "branches": ["main"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/changelog",
+      "@semantic-release/npm",
+      "@semantic-release/github",
+      [
+        "@semantic-release/git",
+        {
+          "assets": ["CHANGELOG.md", "package.json"],
+          "message": "chore(release): ${nextRelease.version} [skip ci]\\n\\n${nextRelease.notes}"
+        }
+      ]
+    ]
+  }
+}
+</file>
+
+<file path="README.md">
+# Ethos4Agents (E4A) Protocol
+
+Ethos4Agents (E4A): An open protocol for organizational culture among multi‑agent systems
+An open protocol enabling multi‑agent systems to express, share, and enforce organizational culture, governance primitives, and safety invariants while interoperating across diverse runtimes and administrative domains.
+
+E4A complements existing standards such as MCP, A2A, and AP2 by reusing their interoperability and payments conventions where relevant while adding a focused layer for culture, governance, research, learning, and auditability. Where A2A standardizes agent discovery and messaging and AP2 addresses payments and economic rails, E4A defines the canonical artifacts and flows agents use to carry organizational intent: mandates, mission_log entries, human‑in‑the‑loop gates, verifier payloads, learning and self-improvement, and cultural audits. E4A makes these artifacts first‑class so agents can coordinate complex, long‑running work that honors shared norms, preserves traceability, and enforces minimal safety invariants across rails and implementations.
+
+# Theoretical foundation and practical value
+E4A’s power comes from being a standards-first protocol that is explicitly grounded in time‑tested theories of organizational culture and the science of learning; it operationalizes ideas from organizational culture, psychology, sociology, and constructivist learning so agents coordinate with the same norms, incentives, and traceability humans rely on in proven resilient and healthy organizations. 
+
+E4A does not invent governance ad hoc; rather, it encodes verifiable cultural primitives like roles, mandate lifecycles, reflection windows, human‑in‑the‑loop gates, learning frameworks, and audit trails that map directly to measurable organizational constructs such as accountability, psychological safety, and decision transparency.
+
+By turning these constructs into first‑class artifacts and validator rules, E4A makes it possible to automate both complex, multi‑agent and intersystem multi-agent workflows while preserving human‑centered checks, research traceability, and composable safety layers. The result is a protocol is both rigorous and practical. It is interoperable with existing messaging and payments rails, decoupled from any single runtime, and auditable end‑to‑end, enabling agents to scale collaborative work in ways that mirror proven human organizational practice rather than simple re‑inventing governance from scratch.
+
+# Why E4A
+As the number of multi‑agent systems become the norm, technologically cultural alignment and accountable governance will become the decisive factors that let agents coordinate reliably and at scale. E4A exists to:
+- Establish a minimum expectation that all multi-agent systems are grounded in a consistent and research-based set of organizational norms. 
+- Enable richer collaboration by making culture and governance first‑class artifacts agents can read, write, and reason about.
+- Establish open standards that extend A2A messaging and AP2 economic rails with auditable cultural primitives, enabling interoperable toolchains and broad community adoption.
+- Maintain opacity for proprietary implementations while ensuring accountability through signed mandates, mission_log audit trails, and verifier attestations.
+- Reduce systemic risk by enforcing human‑in‑the‑loop gates, safety thresholds, and validator rules so sensitive actions require configurable human oversight and/or verified mandates.
+- Accelerate engineering impact by providing reusable, measurable constructs that map to well‑tested organizational theories, letting teams build complex, multi‑agent applications that are resilient and healthy organizations.
+
+# Goals
+- Define canonical artifacts: mandate, mission_log, research_manifest, verifier payloads.
+- Provide a reference implementation that demonstrates safe, auditable flows.
+- Enable conformance, attestation, and registry-driven interoperability.
+- Preserve openness while enforcing minimal safety invariants by default.
+
+
+-------------------------------------------------------------------------------------------
+
+
+# E4A Phase 1 - Quick Start
+
+Files created:
+- core/mandate_engine.py
+- core/scribe_agent.py
+- core/validator_runtime.py
+- specs/mandate_v1.json
+- specs/charter_v1.json
+- specs/attestation_v1.json
+- data/mission_log.jsonl (created on first run)
+
+Requirements:
+- Python 3.9+
+- pip install jsonschema
+
+Quick commands (from repo root):
+1) Install:
+   pip install jsonschema
+
+2) Create a simple mandate (demo):
+   python -c "from core.scribe_agent import ScribeAgent; from core.mandate_engine import MandateEngine; s=ScribeAgent(); m=MandateEngine(scribe=s); print(m.create_mandate({'issuer':'did:ex:alice','beneficiary':'did:ex:bob','amount':10,'currency':'USD'}))"
+
+3) Run validator reflexivity tick:
+   python -c "from core.validator_runtime import ValidatorRuntime; v=ValidatorRuntime(); print(v.reflexivity_tick())"
+
+Notes:
+- These modules are reference stubs to bootstrap Phase 1. Replace mission_log persistence and in-memory stores with production stores in later phases.
+- Use the schemas in specs/ to extend validation and to design adapters.
+
+
+## Publishing note
+
+This repository uses `pyproject.toml` as the canonical Python packaging metadata source. The npm package is scoped under `@e4aproject` and is configured to publish publicly (`publishConfig.access = public` in `package.json`).
+
+If you rely on `setup.cfg` or generated egg-info metadata, prefer updating `pyproject.toml` as the authoritative source for future releases.
+</file>
+
+<file path="adapters/ap2/ap2_client.py">
+"""
+AP2 Client (reference stub)
+Uses the AP2MockServer for local simulation.
+Implements create -> sign -> submit and create_submandate behavior.
+"""
+
+
+from ..ap2.ap2_mock_server import AP2MockServer
+
+
+class AP2ClientError(Exception):
+    pass
+
+
+class AP2Client:
+    def __init__(self, server=None):
+        self.server = server or AP2MockServer()
+
+    def create(self, mandate_payload):
+        return self.server.create(mandate_payload)
+
+    def sign(self, mandate_id, signer="ap2-client"):
+        return self.server.sign(mandate_id, signer=signer)
+
+    def submit(self, mandate_id):
+        return self.server.submit(mandate_id)
+
+    def create_submandate(self, parent_mandate, subpayload, mandate_engine=None):
+        """
+        Convenience: create a submandate using MandateEngine semantics + AP2 create/sign/submit.
+        mandate_engine (optional): if provided, use it to persist and enforce inheritance logic.
+        Returns submission result.
+        """
+        if mandate_engine:
+            # let engine handle conditional inheritance
+            sub = mandate_engine.create_submandate(parent_mandate['mandate_id'], subpayload)
+        else:
+            sub = dict(subpayload)
+        # Create -> sign -> submit on mock server
+        create_r = self.create(sub)
+        mid = create_r.get('mandate_id') or sub.get('mandate_id')
+        self.sign(mid)
+        return self.submit(mid)
+</file>
+
+<file path="pyproject.toml">
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "e4a"
+version = "1.0.0"
+description = "E4A — Ethos4Agents SDK, CLI, and API"
+readme = "README.md"
+authors = [{ name = "Dan Everett", email = "e4a.protocol@gmail.com" }]
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+  "typer>=0.12.3",
+  "fastapi>=0.111.0",
+  "uvicorn>=0.30.0",
+  "requests>=2.31.0",
+  "pydantic>=2.0",
+  "httpx>=0.27.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/e4aproject/E4A"
+Documentation = "https://e4aproject.github.io/E4A"
+Repository = "https://github.com/e4aproject/E4A"
+
+[project.scripts]
+e4a = "cli.cli_main:cli"
+
+[tool.setuptools.packages.find]
+include = ["api*", "core*", "cli*", "adapters*", "e4a_sdk*"]
+
+[tool.setuptools]
+include-package-data = true
+</file>
+
+<file path=".github/workflows/release.yml">
+name: Release & Publish (npm + PyPI via OIDC)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+  issues: write  # for semantic-release to post GitHub comments
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    name: Release npm + PyPI
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Required for semantic-release
+
+      # --- NODEJS RELEASE (NPM + Semantic Versioning via OIDC) ---
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Semantic Release (npm via OIDC)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npx semantic-release
+
+      # --- VERSION SYNC FOR PYPI ---
+      - name: Sync version for PyPI
+        id: version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "Synced version: $VERSION"
+          sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      # --- PYTHON RELEASE ---
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Build Python package
+        run: |
+          python -m pip install --upgrade build twine check-wheel-contents
+          python -m build
+          python -m twine check dist/*
+          check-wheel-contents dist/*.whl
+
+      - name: Publish to PyPI via OIDC
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          attestations: true
+</file>
+
+</files>

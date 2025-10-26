@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "e4a"
+name = "e4a-sdk"
 version = "1.0.0"
 description = "E4A — Ethos4Agents SDK, CLI, and API"
 readme = "README.md"
@@ -11,12 +11,13 @@ authors = [{ name = "Dan Everett", email = "e4a.protocol@gmail.com" }]
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
 dependencies = [
-  "typer>=0.12.3",
-  "fastapi>=0.111.0",
-  "uvicorn>=0.30.0",
-  "requests>=2.31.0",
-  "pydantic>=2.0",
-  "httpx>=0.27.0",
+ "typer>=0.12.3",
+ "fastapi>=0.111.0",
+ "uvicorn>=0.30.0",
+ "requests>=2.31.0",
+ "pydantic>=2.0",
+ "httpx>=0.27.0",
+ "jsonschema>=4.0",
 ]
 
 [project.urls]
@@ -28,7 +29,4 @@ Repository = "https://github.com/e4aproject/E4A"
 e4a = "cli.cli_main:cli"
 
 [tool.setuptools.packages.find]
-include = ["api*", "core*", "cli*", "adapters*", "e4a_sdk*"]
-
-[tool.setuptools]
-include-package-data = true
+where = ["sdk/python"]
