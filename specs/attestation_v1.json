@@ -1,15 +1,27 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Attestation v1 Schema",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://e4a-protocol.org/specs/attestation_v1.jsonschema",
+  "title": "E4A Attestation v1",
+  "description": "A verifiable, signed artifact attesting to the state of a process or piece of data within the E4A ecosystem.",
   "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "specVersion", "commitHash", "testsPassed", "signer", "signature", "timestamp"],
   "properties": {
-    "attestation_id": { "type": "string" },
-    "spec_version": { "type": "string" },
-    "commit_hash": { "type": "string" },
-    "tests_passed": { "type": "boolean" },
-    "signature": { "type": "string" },
-    "did": { "type": "string" },
-    "vc": { "type": "object" }
-  },
-  "required": ["attestation_id", "spec_version", "commit_hash"]
+    "id": { "type": "string", "description": "Attestation ID (ULID/UUID)." },
+    "specVersion": { "type": "string", "description": "The version of the E4A specification this attestation conforms to." },
+    "commitHash": { "type": "string", "description": "The full Git commit hash of the repository state being attested." },
+    "testsPassed": { "type": "boolean", "description": "Boolean indicating if the conformance test suite passed for this commit." },
+    "signer": {
+      "type": "object",
+      "required": ["id", "alg"],
+      "properties": {
+        "id": { "type": "string", "description": "DID or key ID of the signer (e.g., the CI/CD pipeline)." },
+        "alg": { "type": "string", "enum": ["ed25519", "secp256k1", "rsa-pss"] }
+      }
+    },
+    "signature": { "type": "string", "description": "Base64-encoded signature of the canonicalized attestation payload." },
+    "anchorRef": { "type": "string", "description": "Optional cross-rail anchor (e.g., a transaction hash)." },
+    "timestamp": { "type": "string", "format": "date-time", "description": "ISO 8601 timestamp in UTC." },
+    "verificationHints": { "type": "object", "additionalProperties": true, "description": "Optional hints for verifiers." }
+  }
 }

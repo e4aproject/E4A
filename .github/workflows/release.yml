@@ -43,10 +43,8 @@ jobs:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies and publish
-        # This step assumes a package.json.
         run: |
           # If your npm package is not at the root, add 'cd your-package-dir' here
-          # npm ci
           npm publish --provenance --access public
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # NPM still requires a token for now
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
