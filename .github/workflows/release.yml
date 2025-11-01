@@ -1,8 +1,8 @@
-# This is the single source of truth for releasing E4A packages.
+# This is the single, definitive source of truth for releasing E4A packages.
 # It uses a "Trust and Verify" model with full OIDC for both NPM and PyPI.
 #
 # 1. Pre-Flight Check: Verifies the build integrity on every push to main.
-# 2. Release: Publishes to NPM and PyPI only after pre-flight succeeds and a release is warranted.
+# 2. Release: Publishes to NPM and PyPI only after pre-flight succeeds.
 
 name: Release & Publish (npm + PyPI via OIDC)
 
@@ -19,24 +19,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
-
       - name: Verify npm build
         run: |
           npm ci
-          # If a build step exists, run it here. If not, this is a good placeholder.
           npm run build --if-present
-
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Verify Python build
         run: |
           python -m pip install --upgrade build twine
@@ -45,20 +39,20 @@ jobs:
 
   release:
     name: Release to NPM and PyPI
-    needs: pre-flight-check # This job will not run unless the pre-flight check succeeds.
+    needs: pre-flight-check # Will only run if the pre-flight check succeeds.
     runs-on: ubuntu-latest
     permissions:
-      contents: write      # To push releases, tags, and update CHANGELOG.md
-      issues: write        # To post error comments if release fails
-      id-token: write      # Required for OIDC authentication with both NPM and PyPI
+      contents: write      # To push releases, tags, etc.
+      issues: write        # To post error comments if release fails.
+      id-token: write      # Required for OIDC authentication.
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Required for semantic-release
+          fetch-depth: 0 # Required for semantic-release to analyze history.
 
-      - name: Setup Node.js
+      - name: Setup Node.js for OIDC Publishing
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
@@ -71,8 +65,15 @@ jobs:
         id: semantic
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # No NPM_TOKEN is needed; semantic-release will use OIDC.
+          # No NPM_TOKEN is needed; semantic-release authenticates via the .npmrc
+          # file configured by setup-node using the OIDC token.
         run: npx semantic-release
+
+      - name: Setup Python
+        if: steps.semantic.outputs.new_release_published == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
       - name: Sync version to pyproject.toml
         if: steps.semantic.outputs.new_release_published == 'true'
@@ -80,8 +81,8 @@ jobs:
           VERSION=${{ steps.semantic.outputs.new_release_version }}
           echo "Syncing version $VERSION to pyproject.toml"
           sed -i "s/^version = .*/version = \"$VERSION\"/" pyproject.toml
-      
-      - name: Build Python package for PyPI
+
+      - name: Build Python package
         if: steps.semantic.outputs.new_release_published == 'true'
         run: |
           python -m pip install --upgrade build
@@ -90,41 +91,3 @@ jobs:
       - name: Publish Python package to PyPI via OIDC
         if: steps.semantic.outputs.new_release_published == 'true'
         uses: pypa/gh-action-pypi-publish@release/v1
-EOF```
-
-#### **Step 3: Update Publishing Documentation with a Contingency Plan**
-
-Your research correctly identified the risk of an unrecoverable partial release. We must document the human-in-the-loop recovery process.
-
-```bash
-# Overwrite docs/PUBLISHING.md with this final version.
-cat <<'EOF' > docs/PUBLISHING.md
-# Publishing E4A Packages
-
-This document describes the automated process for publishing E4A packages to PyPI and NPM.
-
-## Release Process
-
-Publication is handled automatically by the `.github/workflows/release.yml` GitHub Action, which is triggered on every push to the `main` branch.
-
-The process uses **semantic-release** to analyze commit messages and determine if a new version should be published. Commits must follow the [Conventional Commits](https://www.conventionalcommits.org/) specification. For example, a commit message starting with `fix:` will trigger a patch release, and `feat:` will trigger a minor release.
-
-## Authentication Model: Full OIDC
-
-We use **OIDC (OpenID Connect)** for secure, tokenless authentication with both **PyPI** and **NPM**. This is the industry best practice and avoids the need for long-lived API tokens. This is managed via the "Trusted Publisher" settings in each registry.
-
-## Manual Recovery for a Failed Release (Contingency Plan)
-
-Our CI includes a "pre-flight check" to prevent most failures. However, if a network issue or a permissions problem with OIDC causes the `release` job to fail *after* a version tag has been created on GitHub but *before* a package is successfully published to a registry, the automated system may be stuck. `semantic-release` will not attempt to publish the same version again.
-
-To recover from this state, you must perform the following manual intervention:
-
-1.  **Delete the GitHub Release:** Navigate to the "Releases" page of the E4A repository on GitHub. Find the failed release (e.g., `v1.0.1`) and delete it.
-2.  **Delete the Git Tag:** In your local terminal, run the following commands to delete the tag from both your local repository and the remote:
-    ```bash
-    git pull
-    git tag -d v1.0.1
-    git push --delete origin v1.0.1
-    ```
-    (Replace `v1.0.1` with the failed version number).
-3.  **Trigger the Workflow Again:** You can now re-run the failed workflow from the GitHub Actions tab or push another commit to `main` to have `semantic-release` attempt the release of that version again.
