@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "e4a-sdk"
-version = ""
+version = "1.0.0.dev1"
 description = "E4A — Ethos4Agents SDK, CLI, and API"
 readme = "README.md"
 authors = [{ name = "Dan Everett", email = "e4a.protocol@gmail.com" }]
