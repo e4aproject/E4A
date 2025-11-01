@@ -1,5 +1,5 @@
-from core.scribe_agent import ScribeAgent
-from core.mandate_engine import MandateEngine
+from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
+from sdk.python.e4a_sdk.mandate_engine import MandateEngine
 from adapters.ap2.ap2_client import AP2Client
 from adapters.universal_rail_adapter.midnight_adapter import MidnightAdapter
 from adapters.universal_rail_adapter.eth_adapter import EthAdapter

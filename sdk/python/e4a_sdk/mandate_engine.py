@@ -14,7 +14,7 @@ import uuid
 from datetime import datetime
 from jsonschema import validate, ValidationError
 
-SPEC = os.path.join(os.path.dirname(__file__), '..', 'specs', 'mandate_v1.json')
+SPEC = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'specs', 'mandate_v1.json')
 
 with open(SPEC, 'r') as _f:
     MANDATE_SCHEMA = json.load(_f)

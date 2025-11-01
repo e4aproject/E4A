@@ -189,6 +189,46 @@
       "created_at": "2025-10-11T13:32:54.409167Z",
       "settlement_ref": "0x50b15cf60c0247178d00a91f1f4b32bf",
       "published_at": "2025-10-11T13:32:54.410585Z"
+    },
+    "a8c03bb2-8637-48b6-8b55-253e28113eaa": {
+      "anchor_ref": "a8c03bb2-8637-48b6-8b55-253e28113eaa",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-11-01T19:12:44.066163Z",
+      "settlement_ref": "0xd1409b7eb47b4e6ebfb4bc58079832e2",
+      "published_at": "2025-11-01T19:12:44.067883Z"
+    },
+    "700bdb99-80b6-4fd9-9ed1-ab0ffb851083": {
+      "anchor_ref": "700bdb99-80b6-4fd9-9ed1-ab0ffb851083",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-11-01T19:12:44.142097Z",
+      "settlement_ref": "0x6c3d99df391d4ace943b68ebca26ad5a",
+      "published_at": "2025-11-01T19:12:44.143368Z"
+    },
+    "df71ac87-f3c2-4d90-8831-ab68e8b30c8a": {
+      "anchor_ref": "df71ac87-f3c2-4d90-8831-ab68e8b30c8a",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-11-01T19:12:54.908000Z",
+      "settlement_ref": "0x357e0d4a77f749ccb6e3f8778861ac95",
+      "published_at": "2025-11-01T19:12:54.909116Z"
+    },
+    "acb084bb-cd01-41a2-acb3-cff30638d963": {
+      "anchor_ref": "acb084bb-cd01-41a2-acb3-cff30638d963",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-11-01T19:12:54.921641Z",
+      "settlement_ref": "0x1a18f3b23f1a49cb911c871fe4197691",
+      "published_at": "2025-11-01T19:12:54.922995Z"
     }
   }
 }

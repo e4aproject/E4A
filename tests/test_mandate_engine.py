@@ -1,5 +1,5 @@
-from core.scribe_agent import ScribeAgent
-from core.mandate_engine import MandateEngine
+from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
+from sdk.python.e4a_sdk.mandate_engine import MandateEngine
 
 
 def test_create_and_execute_mandate(tmp_path):

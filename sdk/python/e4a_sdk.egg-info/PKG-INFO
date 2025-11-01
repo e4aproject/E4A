@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: e4a-sdk
-Version: 1.0.0
+Version: 1.0.0.dev1
 Summary: E4A — Ethos4Agents SDK, CLI, and API
 Author-email: Dan Everett <e4a.protocol@gmail.com>
 License: MIT License

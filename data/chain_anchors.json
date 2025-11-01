@@ -113,6 +113,30 @@
       "chain": "ethereum-test",
       "tx_hash": "0x50b15cf60c0247178d00a91f1f4b32bf",
       "timestamp": "2025-10-11T13:32:54.409936Z"
+    },
+    "0xd1409b7eb47b4e6ebfb4bc58079832e2": {
+      "proof_hash": "a8c03bb2-8637-48b6-8b55-253e28113eaa",
+      "chain": "ethereum",
+      "tx_hash": "0xd1409b7eb47b4e6ebfb4bc58079832e2",
+      "timestamp": "2025-11-01T19:12:44.067383Z"
+    },
+    "0x6c3d99df391d4ace943b68ebca26ad5a": {
+      "proof_hash": "700bdb99-80b6-4fd9-9ed1-ab0ffb851083",
+      "chain": "ethereum-test",
+      "tx_hash": "0x6c3d99df391d4ace943b68ebca26ad5a",
+      "timestamp": "2025-11-01T19:12:44.142837Z"
+    },
+    "0x357e0d4a77f749ccb6e3f8778861ac95": {
+      "proof_hash": "df71ac87-f3c2-4d90-8831-ab68e8b30c8a",
+      "chain": "ethereum",
+      "tx_hash": "0x357e0d4a77f749ccb6e3f8778861ac95",
+      "timestamp": "2025-11-01T19:12:54.908652Z"
+    },
+    "0x1a18f3b23f1a49cb911c871fe4197691": {
+      "proof_hash": "acb084bb-cd01-41a2-acb3-cff30638d963",
+      "chain": "ethereum-test",
+      "tx_hash": "0x1a18f3b23f1a49cb911c871fe4197691",
+      "timestamp": "2025-11-01T19:12:54.922421Z"
     }
   }
 }
