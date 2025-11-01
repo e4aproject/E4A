@@ -61,14 +61,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run Semantic Release (NPM + GitHub Release via OIDC)
-        id: semantic
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # No NPM_TOKEN is needed; semantic-release authenticates via the .npmrc
-          # file configured by setup-node using the OIDC token.
-        run: npx semantic-release
-
       - name: Setup Python
         if: steps.semantic.outputs.new_release_published == 'true'
         uses: actions/setup-python@v5
