@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://e4a-protocol.org/specs/wisdom_artifact_v1.jsonschema",
+  "title": "E4A Wisdom Artifact v1",
+  "description": "A verifiable, anonymized, and transferable learning derived from a constellation's mission logs.",
+  "type": "object",
+  "required": ["wisdomId", "learningDomain", "sourceCharterHash", "anonymizedDataPoints", "wisdomPayload", "attestation"],
+  "properties": {
+    "wisdomId": { "type": "string", "description": "Unique identifier for the wisdom artifact." },
+    "learningDomain": { "type": "string", "description": "The specific context of the learning (e.g., 'mandate_failure_analysis')." },
+    "sourceCharterHash": { "type": "string", "description": "SHA-256 hash of the originating constellation's Charter, providing cultural context." },
+    "anonymizedDataPoints": { "type": "integer", "description": "The number of mission log entries used to generate this learning." },
+    "wisdomPayload": {
+      "type": "object",
+      "description": "The generalized, anonymized learning. This can be a model update, a new rule, or a proposed schema change."
+    },
+    "attestation": {
+      "$ref": "https://e4a-protocol.org/specs/attestation_v1.jsonschema",
+      "description": "An E4A Attestation signing this WisdomArtifact, providing proof of its origin and integrity."
+    }
+  }
+}
