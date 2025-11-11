@@ -1,45 +1,40 @@
-
 # adapters/a2a/adapter.py
+import json
+from pathlib import Path
+from typing import Dict, Any
+from jsonschema import validate, ValidationError
 
-"""
-This class will serve as the bridge between the public A2A protocol
-and the internal logic of the E4A Python SDK. It translates A2A
-messages into E4A SDK calls.
-"""
-from e4a_sdk import MandateEngine, GovernanceKernel # Assuming these will be the core classes
+# Assumes SDK is structured as sdk/python/e4a_sdk
+from sdk.python.e4a_sdk.mandate_engine import MandateEngine, MandateEngineError
+from sdk.python.e4a_sdk.governance_kernel import GovernanceKernel
+from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
+
+SPEC_DIR = Path(__file__).resolve().parents[2] / "specs"
+
+def _load_schema(name: str) -> Dict[str, Any]:
+    path = SPEC_DIR / name
+    if not path.exists():
+        raise FileNotFoundError(f"Schema not found: {path}")
+    return json.loads(path.read_text())
+
+MANDATE_SCHEMA = _load_schema("mandate_v1.json")
 
 class E4A_A2A_Adapter:
-    """
-    Exposes E4A functionality as a set of A2A "skills" that can be advertised
-    on an agent's AgentCard.
-    """
-    def __init__(self, mandate_engine: MandateEngine, governance_kernel: GovernanceKernel):
-        """Initializes the adapter with instances of the core E4A logic."""
-        self.mandate_engine = mandate_engine
-        self.governance_kernel = governance_kernel
-        print("E4A_A2A_Adapter initialized and ready to serve skills.")
+    def __init__(self, scribe: ScribeAgent = None):
+        self.scribe = scribe or ScribeAgent()
+        self.mandate_engine = MandateEngine(scribe=self.scribe)
+        self.gov = GovernanceKernel()
 
-    def create_mandate(self, a2a_data_part: dict) -> dict:
-        """
-        Handles an A2A request for the 'create-mandate' skill.
-        Args:
-            a2a_data_part: The JSON payload from an A2A DataPart, expected to
-                           conform to the E4A mandate schema.
-        Returns:
-            A dictionary to be packaged into an A2A Task or Artifact as the result.
-        """
-        print("Received A2A request to create mandate...")
-        # 1. Validate the payload against the canonical E4A mandate schema.
-        # 2. Pass the validated data to self.mandate_engine.create(...)
-        # 3. Return the result in a structured format.
-        raise NotImplementedError("create_mandate skill is not yet implemented.")
+    def _validate(self, payload: Dict[str, Any], schema_name: str):
+        schema = _load_schema(schema_name)
+        try:
+            validate(instance=payload, schema=schema)
+        except ValidationError as e:
+            raise ValueError(f"Payload failed schema validation: {e.message}")
 
-    def execute_mandate(self, a2a_data_part: dict) -> dict:
-        """Handles an A2A request for the 'execute-mandate' skill."""
-        print("Received A2A request to execute mandate...")
-        raise NotImplementedError("execute_mandate skill is not yet implemented.")
-
-    def propose_governance_action(self, a2a_data_part: dict) -> dict:
-        """Handles an A2A request for the 'propose-governance-action' skill."""
-        print("Received A2A request to propose governance action...")
-        raise NotImplementedError("propose_governance_action skill is not yet implemented.")
+    def create_mandate(self, data_part: Dict[str, Any]) -> Dict[str, Any]:
+        """Skill: create-mandate"""
+        self._validate(data_part, "mandate_v1.json")
+        mandate = self.mandate_engine.create_mandate(data_part)
+        self.scribe.record("mandate_created", payload=mandate, summary="Mandate created via A2A Adapter")
+        return {"status": "created", "mandate": mandate}

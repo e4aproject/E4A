@@ -12,7 +12,13 @@ def test_create_and_execute_mandate(tmp_path):
         "beneficiary": "did:ex:bob",
         "amount": 50,
         "currency": "USD",
-        "fee_distribution": {"protocol": 0.02, "validator": 0.01, "issuer": 0}
+        "fee_distribution": {"protocol": 0.02, "validator": 0.01, "issuer": 0},
+        "intent": {
+            "goal": "create and execute a simple mandate",
+            "expected_outcome": "mandate executed and logged",
+            "contextual_tone": "neutral",
+            "statistical_purpose": "validate mandate engine functionality"
+        }
     })
     assert m['issuer'] == "did:ex:alice"
     assert 'mandate_id' in m

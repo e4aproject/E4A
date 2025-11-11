@@ -20,6 +20,7 @@ sdk/python/e4a_sdk/charter_engine.py
 sdk/python/e4a_sdk/client.py
 sdk/python/e4a_sdk/config_loader.py
 sdk/python/e4a_sdk/evolution_engine.py
+sdk/python/e4a_sdk/gate_engine.py
 sdk/python/e4a_sdk/governance_kernel.py
 sdk/python/e4a_sdk/mandate_engine.py
 sdk/python/e4a_sdk/reputation_index.py
@@ -33,11 +34,16 @@ sdk/python/e4a_sdk.egg-info/requires.txt
 sdk/python/e4a_sdk.egg-info/top_level.txt
 specs/attestation_v1.json
 specs/charter_v1.json
+specs/gate_v1.json
 specs/mandate_v1.json
+specs/mandate_v2.json
 specs/mission_log_v1.md
 specs/wisdom_artifact_v1.json
+tests/test_a2a_adapter.py
 tests/test_api_cli_integration.py
 tests/test_cardano_midnight_bridge.py
 tests/test_cli_sdk.py
+tests/test_gate_engine.py
 tests/test_integration_ap2_midnight.py
 tests/test_mandate_engine.py
+tests/test_tools.py

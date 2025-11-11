@@ -191,6 +191,512 @@
       "signatures": [
         "sig-tester-bf2aae3e-63b2-4d07-af9d-8b04c0fbb1ad"
       ]
+    },
+    "12543e78-e814-499b-8bcc-e86ec8dcc6bf": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "12543e78-e814-499b-8bcc-e86ec8dcc6bf",
+      "created_at": "2025-11-01T21:00:20.791022Z",
+      "signatures": [
+        "sig-tester-12543e78-e814-499b-8bcc-e86ec8dcc6bf"
+      ]
+    },
+    "dc0b2750-64d7-4aa4-9344-a5a082a0203e": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "dc0b2750-64d7-4aa4-9344-a5a082a0203e",
+      "created_at": "2025-11-01T21:00:40.986135Z",
+      "signatures": [
+        "sig-tester-dc0b2750-64d7-4aa4-9344-a5a082a0203e"
+      ]
+    },
+    "9756ddb2-1d31-4ea3-bf53-c73f0834ff0a": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "9756ddb2-1d31-4ea3-bf53-c73f0834ff0a",
+      "created_at": "2025-11-01T21:01:00.780519Z",
+      "signatures": [
+        "sig-tester-9756ddb2-1d31-4ea3-bf53-c73f0834ff0a"
+      ]
+    },
+    "fe916b1c-6ce5-4426-a06e-0fa743ec5a1f": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "fe916b1c-6ce5-4426-a06e-0fa743ec5a1f",
+      "created_at": "2025-11-01T21:01:12.422767Z",
+      "signatures": [
+        "sig-tester-fe916b1c-6ce5-4426-a06e-0fa743ec5a1f"
+      ]
+    },
+    "acea37b8-f2a5-43ce-84ec-5da3826a76d8": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "acea37b8-f2a5-43ce-84ec-5da3826a76d8",
+      "created_at": "2025-11-01T21:02:18.547368Z",
+      "signatures": [
+        "sig-tester-acea37b8-f2a5-43ce-84ec-5da3826a76d8"
+      ]
+    },
+    "a9f32133-eba3-45a9-ad4d-1b417d79f98f": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "a9f32133-eba3-45a9-ad4d-1b417d79f98f",
+      "created_at": "2025-11-01T21:04:38.312253Z",
+      "signatures": [
+        "sig-tester-a9f32133-eba3-45a9-ad4d-1b417d79f98f"
+      ]
+    },
+    "36d36b25-db0c-4a34-9401-1e7c2cf99ad3": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "36d36b25-db0c-4a34-9401-1e7c2cf99ad3",
+      "created_at": "2025-11-01T21:06:09.049061Z",
+      "signatures": [
+        "sig-tester-36d36b25-db0c-4a34-9401-1e7c2cf99ad3"
+      ]
+    },
+    "d6169f89-5699-421a-8385-e1ebe9357efa": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "d6169f89-5699-421a-8385-e1ebe9357efa",
+      "created_at": "2025-11-01T21:07:04.785066Z",
+      "signatures": [
+        "sig-tester-d6169f89-5699-421a-8385-e1ebe9357efa"
+      ]
+    },
+    "7a4e34fc-8b8a-4527-b5e5-3db7039893f0": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "7a4e34fc-8b8a-4527-b5e5-3db7039893f0",
+      "created_at": "2025-11-01T21:08:49.285848Z",
+      "signatures": [
+        "sig-tester-7a4e34fc-8b8a-4527-b5e5-3db7039893f0"
+      ]
+    },
+    "42fc633b-c6d4-49b5-bc4f-21ea279f90d5": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "42fc633b-c6d4-49b5-bc4f-21ea279f90d5",
+      "created_at": "2025-11-01T21:11:45.263369Z",
+      "signatures": [
+        "sig-tester-42fc633b-c6d4-49b5-bc4f-21ea279f90d5"
+      ]
+    },
+    "18b3a564-990b-4137-9448-e0d5406df882": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "18b3a564-990b-4137-9448-e0d5406df882",
+      "created_at": "2025-11-01T21:13:46.325029Z",
+      "signatures": [
+        "sig-tester-18b3a564-990b-4137-9448-e0d5406df882"
+      ]
+    },
+    "4ae23b4f-960a-4fd5-a78e-cd8468803dfe": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "4ae23b4f-960a-4fd5-a78e-cd8468803dfe",
+      "created_at": "2025-11-01T21:18:09.677688Z",
+      "signatures": [
+        "sig-tester-4ae23b4f-960a-4fd5-a78e-cd8468803dfe"
+      ]
+    },
+    "e4229d88-e5b7-466b-9a12-179f97359bcc": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "e4229d88-e5b7-466b-9a12-179f97359bcc",
+      "created_at": "2025-11-01T21:18:46.959004Z",
+      "signatures": [
+        "sig-tester-e4229d88-e5b7-466b-9a12-179f97359bcc"
+      ]
+    },
+    "1ed04cdf-2079-4967-bb76-52ea46fb7162": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "1ed04cdf-2079-4967-bb76-52ea46fb7162",
+      "created_at": "2025-11-01T21:20:04.469262Z",
+      "signatures": [
+        "sig-tester-1ed04cdf-2079-4967-bb76-52ea46fb7162"
+      ]
+    },
+    "87dd19fd-9ea8-48bd-aed6-e737da571979": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "87dd19fd-9ea8-48bd-aed6-e737da571979",
+      "created_at": "2025-11-01T21:21:20.599964Z",
+      "signatures": [
+        "sig-tester-87dd19fd-9ea8-48bd-aed6-e737da571979"
+      ]
+    },
+    "01290a64-610b-486a-8f6a-57000b59b4a2": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "01290a64-610b-486a-8f6a-57000b59b4a2",
+      "created_at": "2025-11-01T22:07:32.433850Z",
+      "signatures": [
+        "sig-tester-01290a64-610b-486a-8f6a-57000b59b4a2"
+      ]
+    },
+    "7ccc699b-4260-4c23-a9c6-590cd6ad3399": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "7ccc699b-4260-4c23-a9c6-590cd6ad3399",
+      "created_at": "2025-11-01T22:07:44.693028Z",
+      "signatures": [
+        "sig-tester-7ccc699b-4260-4c23-a9c6-590cd6ad3399"
+      ]
+    },
+    "9305da8c-a37b-4604-a6f1-e797b6378cf2": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "9305da8c-a37b-4604-a6f1-e797b6378cf2",
+      "created_at": "2025-11-01T22:11:12.253186Z",
+      "signatures": [
+        "sig-tester-9305da8c-a37b-4604-a6f1-e797b6378cf2"
+      ]
+    },
+    "b8d29186-7266-4d67-ad76-a59c72a6b21d": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "b8d29186-7266-4d67-ad76-a59c72a6b21d",
+      "created_at": "2025-11-09T07:28:15.563778Z",
+      "signatures": [
+        "sig-tester-b8d29186-7266-4d67-ad76-a59c72a6b21d"
+      ]
+    },
+    "54e2d5e5-3902-4331-b757-82308a5f666b": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "54e2d5e5-3902-4331-b757-82308a5f666b",
+      "created_at": "2025-11-09T13:31:03.262281Z",
+      "signatures": [
+        "sig-tester-54e2d5e5-3902-4331-b757-82308a5f666b"
+      ]
+    },
+    "e1991ebd-bd2e-47c8-93d1-5c0232070014": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "e1991ebd-bd2e-47c8-93d1-5c0232070014",
+      "created_at": "2025-11-09T13:36:11.625838Z",
+      "signatures": [
+        "sig-tester-e1991ebd-bd2e-47c8-93d1-5c0232070014"
+      ]
+    },
+    "c9c9dd49-f1b9-4003-b1de-5a258b209108": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "c9c9dd49-f1b9-4003-b1de-5a258b209108",
+      "created_at": "2025-11-09T13:36:41.051159Z",
+      "signatures": [
+        "sig-tester-c9c9dd49-f1b9-4003-b1de-5a258b209108"
+      ]
+    },
+    "fb6cc45a-b627-4c0f-b534-8f2d396391f9": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "fb6cc45a-b627-4c0f-b534-8f2d396391f9",
+      "created_at": "2025-11-09T13:37:36.060798Z",
+      "signatures": [
+        "sig-tester-fb6cc45a-b627-4c0f-b534-8f2d396391f9"
+      ]
     }
   },
   "submissions": {
@@ -264,6 +770,144 @@
       "submission_id": "8a1dadc7-543a-4582-b796-e629344fedf6",
       "mandate_id": "bf2aae3e-63b2-4d07-af9d-8b04c0fbb1ad",
       "submitted_at": "2025-11-01T19:12:54.920753Z",
+      "status": "settled"
+    },
+    "f8221f60-4e29-4de4-8a13-a271e0204a7c": {
+      "submission_id": "f8221f60-4e29-4de4-8a13-a271e0204a7c",
+      "mandate_id": "12543e78-e814-499b-8bcc-e86ec8dcc6bf",
+      "submitted_at": "2025-11-01T21:00:20.792802Z",
+      "status": "settled"
+    },
+    "f9da06f1-fe3a-408a-ab92-00d80e7dc142": {
+      "submission_id": "f9da06f1-fe3a-408a-ab92-00d80e7dc142",
+      "mandate_id": "dc0b2750-64d7-4aa4-9344-a5a082a0203e",
+      "submitted_at": "2025-11-01T21:00:40.987688Z",
+      "status": "settled"
+    },
+    "f06e8332-8d09-4d31-b9dc-63ad16e36083": {
+      "submission_id": "f06e8332-8d09-4d31-b9dc-63ad16e36083",
+      "mandate_id": "9756ddb2-1d31-4ea3-bf53-c73f0834ff0a",
+      "submitted_at": "2025-11-01T21:01:00.783229Z",
+      "status": "settled"
+    },
+    "e7591f81-9c3a-4722-bba2-eeb405bea410": {
+      "submission_id": "e7591f81-9c3a-4722-bba2-eeb405bea410",
+      "mandate_id": "fe916b1c-6ce5-4426-a06e-0fa743ec5a1f",
+      "submitted_at": "2025-11-01T21:01:12.425414Z",
+      "status": "settled"
+    },
+    "280f426c-4291-40fa-bfaf-d47810946e0d": {
+      "submission_id": "280f426c-4291-40fa-bfaf-d47810946e0d",
+      "mandate_id": "acea37b8-f2a5-43ce-84ec-5da3826a76d8",
+      "submitted_at": "2025-11-01T21:02:18.549773Z",
+      "status": "settled"
+    },
+    "6b80958d-41e7-41dd-aee4-60cbb324f9a9": {
+      "submission_id": "6b80958d-41e7-41dd-aee4-60cbb324f9a9",
+      "mandate_id": "a9f32133-eba3-45a9-ad4d-1b417d79f98f",
+      "submitted_at": "2025-11-01T21:04:38.315496Z",
+      "status": "settled"
+    },
+    "ff62ce95-0b66-4d48-927b-6435f0041990": {
+      "submission_id": "ff62ce95-0b66-4d48-927b-6435f0041990",
+      "mandate_id": "36d36b25-db0c-4a34-9401-1e7c2cf99ad3",
+      "submitted_at": "2025-11-01T21:06:09.052063Z",
+      "status": "settled"
+    },
+    "fb06fa6c-b655-4c48-83db-ad354a7827ee": {
+      "submission_id": "fb06fa6c-b655-4c48-83db-ad354a7827ee",
+      "mandate_id": "d6169f89-5699-421a-8385-e1ebe9357efa",
+      "submitted_at": "2025-11-01T21:07:04.787749Z",
+      "status": "settled"
+    },
+    "86c28800-b665-4c18-bc8d-2ad9a53e9028": {
+      "submission_id": "86c28800-b665-4c18-bc8d-2ad9a53e9028",
+      "mandate_id": "7a4e34fc-8b8a-4527-b5e5-3db7039893f0",
+      "submitted_at": "2025-11-01T21:08:49.287854Z",
+      "status": "settled"
+    },
+    "8717f3f5-623a-4d0f-a459-684ae7d8fc05": {
+      "submission_id": "8717f3f5-623a-4d0f-a459-684ae7d8fc05",
+      "mandate_id": "42fc633b-c6d4-49b5-bc4f-21ea279f90d5",
+      "submitted_at": "2025-11-01T21:11:45.267800Z",
+      "status": "settled"
+    },
+    "41088acb-2184-4622-b5cd-1945312f2738": {
+      "submission_id": "41088acb-2184-4622-b5cd-1945312f2738",
+      "mandate_id": "18b3a564-990b-4137-9448-e0d5406df882",
+      "submitted_at": "2025-11-01T21:13:46.328957Z",
+      "status": "settled"
+    },
+    "db8817fb-a30f-49cf-a485-ff22ad0e06ba": {
+      "submission_id": "db8817fb-a30f-49cf-a485-ff22ad0e06ba",
+      "mandate_id": "4ae23b4f-960a-4fd5-a78e-cd8468803dfe",
+      "submitted_at": "2025-11-01T21:18:09.681618Z",
+      "status": "settled"
+    },
+    "d267ecf4-8ad2-484f-85b1-286cb9b32f4d": {
+      "submission_id": "d267ecf4-8ad2-484f-85b1-286cb9b32f4d",
+      "mandate_id": "e4229d88-e5b7-466b-9a12-179f97359bcc",
+      "submitted_at": "2025-11-01T21:18:46.962543Z",
+      "status": "settled"
+    },
+    "e31cec29-1812-49a3-8f55-8e059c0e6fa7": {
+      "submission_id": "e31cec29-1812-49a3-8f55-8e059c0e6fa7",
+      "mandate_id": "1ed04cdf-2079-4967-bb76-52ea46fb7162",
+      "submitted_at": "2025-11-01T21:20:04.473376Z",
+      "status": "settled"
+    },
+    "b348ddc0-0bee-4ce0-82f5-3695862bebe9": {
+      "submission_id": "b348ddc0-0bee-4ce0-82f5-3695862bebe9",
+      "mandate_id": "87dd19fd-9ea8-48bd-aed6-e737da571979",
+      "submitted_at": "2025-11-01T21:21:20.604331Z",
+      "status": "settled"
+    },
+    "94e2d23b-3770-40c1-8400-017eccbbffcb": {
+      "submission_id": "94e2d23b-3770-40c1-8400-017eccbbffcb",
+      "mandate_id": "01290a64-610b-486a-8f6a-57000b59b4a2",
+      "submitted_at": "2025-11-01T22:07:32.436304Z",
+      "status": "settled"
+    },
+    "5c28cdc7-2729-4c84-ab14-8df19f9dfc4e": {
+      "submission_id": "5c28cdc7-2729-4c84-ab14-8df19f9dfc4e",
+      "mandate_id": "7ccc699b-4260-4c23-a9c6-590cd6ad3399",
+      "submitted_at": "2025-11-01T22:07:44.698060Z",
+      "status": "settled"
+    },
+    "1a4ec900-7983-4ca4-803b-8d8faa3ca04a": {
+      "submission_id": "1a4ec900-7983-4ca4-803b-8d8faa3ca04a",
+      "mandate_id": "9305da8c-a37b-4604-a6f1-e797b6378cf2",
+      "submitted_at": "2025-11-01T22:11:12.258120Z",
+      "status": "settled"
+    },
+    "da7603e2-245a-4dff-98e1-439a3d8e6d49": {
+      "submission_id": "da7603e2-245a-4dff-98e1-439a3d8e6d49",
+      "mandate_id": "b8d29186-7266-4d67-ad76-a59c72a6b21d",
+      "submitted_at": "2025-11-09T07:28:15.567336Z",
+      "status": "settled"
+    },
+    "1dcef138-2061-4dfc-9339-270dffbf8c50": {
+      "submission_id": "1dcef138-2061-4dfc-9339-270dffbf8c50",
+      "mandate_id": "54e2d5e5-3902-4331-b757-82308a5f666b",
+      "submitted_at": "2025-11-09T13:31:03.265242Z",
+      "status": "settled"
+    },
+    "d053e86c-4cb0-4bed-8aed-93bef7f2761e": {
+      "submission_id": "d053e86c-4cb0-4bed-8aed-93bef7f2761e",
+      "mandate_id": "e1991ebd-bd2e-47c8-93d1-5c0232070014",
+      "submitted_at": "2025-11-09T13:36:11.630463Z",
+      "status": "settled"
+    },
+    "09466a75-66f6-4164-8ee0-c061e5c3fa52": {
+      "submission_id": "09466a75-66f6-4164-8ee0-c061e5c3fa52",
+      "mandate_id": "c9c9dd49-f1b9-4003-b1de-5a258b209108",
+      "submitted_at": "2025-11-09T13:36:41.054352Z",
+      "status": "settled"
+    },
+    "c10dd5b9-0b5e-44b4-ab74-b570a77f6762": {
+      "submission_id": "c10dd5b9-0b5e-44b4-ab74-b570a77f6762",
+      "mandate_id": "fb6cc45a-b627-4c0f-b534-8f2d396391f9",
+      "submitted_at": "2025-11-09T13:37:36.065066Z",
       "status": "settled"
     }
   }

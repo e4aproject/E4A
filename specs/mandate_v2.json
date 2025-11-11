@@ -1,0 +1,30 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Mandate v2 Schema",
+  "type": "object",
+  "properties": {
+    "mandate_id": { "type": "string" },
+    "parent_mandate_id": { "type": ["string", "null"] },
+    "issuer": { "type": "string" },
+    "beneficiary": { "type": "string" },
+    "amount": { "type": "number" },
+    "currency": { "type": "string" },
+    "validator_ref": { "type": "string" },
+    "proof_anchor": { "type": "object" },
+    "fee_distribution": { "type": "object" },
+    "policy_tags": { "type": "array", "items": { "type": "string" } },
+    "replay_nonce": { "type": "string" },
+    "intent": {
+      "type": "object",
+      "properties": {
+        "goal": { "type": "string", "description": "The explicit objective of the mandate." },
+        "expected_outcome": { "type": "string", "description": "The desired result or state upon successful completion." },
+        "contextual_tone": { "type": "string", "description": "The desired tone or style of interaction (e.g., 'collaborative', 'urgent', 'formal')." },
+        "statistical_purpose": { "type": "string", "description": "The underlying statistical or meta-level objective of the AI's action (e.g., 'to restore collaborative state', 'to optimize resource allocation')." },
+        "requires_approval": { "type": "array", "items": { "type": "string" }, "description": "List of DIDs or roles that must approve this mandate before execution." }
+      },
+      "required": ["goal", "expected_outcome", "contextual_tone", "statistical_purpose"]
+    }
+  },
+  "required": ["mandate_id", "issuer", "beneficiary", "intent"]
+}

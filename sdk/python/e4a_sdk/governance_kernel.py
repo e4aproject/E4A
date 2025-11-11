@@ -10,6 +10,7 @@ import os
 import json
 from datetime import datetime, timezone
 from typing import Dict, Any
+from .reputation_index import ReputationIndex
 
 STATE_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'governance_state.json')
 
@@ -33,9 +34,10 @@ def _save(state):
 
 
 class GovernanceKernel:
-    def __init__(self):
+    def __init__(self, reputation_index: ReputationIndex = None):
         _ensure()
         self.state = _load()
+        self.reputation_index = reputation_index or ReputationIndex()
 
     def register_charter(self, charter_id: str, charter_doc: Dict[str, Any]):
         self.state = _load()
@@ -78,14 +80,23 @@ class GovernanceKernel:
         votes = prop.get('votes', {})
         if len(votes) < quorum:
             return {'status': 'rejected', 'reason': 'quorum_not_met', 'votes': votes}
-        yes = sum(1 for v in votes.values() if v.lower() in ('yes', 'y', 'approve'))
-        no = sum(1 for v in votes.values() if v.lower() in ('no', 'n', 'reject'))
-        if yes > no:
+
+        weighted_yes = 0.0
+        weighted_no = 0.0
+
+        for voter_id, vote in votes.items():
+            reputation_score = self.reputation_index.get_score(voter_id) # Default to 1.0 if no score
+            if vote.lower() in ('yes', 'y', 'approve'):
+                weighted_yes += reputation_score
+            elif vote.lower() in ('no', 'n', 'reject'):
+                weighted_no += reputation_score
+
+        if weighted_yes > weighted_no:
             prop['enacted_at'] = datetime.now(timezone.utc).isoformat()
             prop['status'] = 'enacted'
             _save(self.state)
-            return {'status': 'enacted', 'proposal': prop}
+            return {'status': 'enacted', 'proposal': prop, 'weighted_votes': {'yes': weighted_yes, 'no': weighted_no}}
         else:
             prop['status'] = 'rejected'
             _save(self.state)
-            return {'status': 'rejected', 'proposal': prop}
+            return {'status': 'rejected', 'proposal': prop, 'weighted_votes': {'yes': weighted_yes, 'no': weighted_no}}

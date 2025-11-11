@@ -7,7 +7,7 @@ State stored in data/ap2_mock_store.json
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 
 STORE_PATH = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'ap2_mock_store.json')
 
@@ -39,7 +39,7 @@ class AP2MockServer:
         state = _load()
         mandate_id = mandate_payload.get('mandate_id') or str(uuid.uuid4())
         mandate_payload['mandate_id'] = mandate_id
-        mandate_payload['created_at'] = datetime.utcnow().isoformat() + 'Z'
+        mandate_payload['created_at'] = datetime.now(UTC).isoformat().replace('+00:00', 'Z')
         state['mandates'][mandate_id] = mandate_payload
         _save(state)
         return {"status": "created", "mandate_id": mandate_id}
@@ -61,7 +61,7 @@ class AP2MockServer:
         state['submissions'][submission_id] = {
             "submission_id": submission_id,
             "mandate_id": mandate_id,
-            "submitted_at": datetime.utcnow().isoformat() + 'Z',
+            "submitted_at": datetime.now(UTC).isoformat().replace('+00:00', 'Z'),
             "status": "settled"
         }
         _save(state)

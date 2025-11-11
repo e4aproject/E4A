@@ -17,7 +17,13 @@ def test_ap2_create_sign_submit_and_midnight_anchor(tmp_path):
         "beneficiary": "did:ex:bob",
         "amount": 42,
         "currency": "USD",
-        "fee_distribution": {"protocol": 0.01, "validator": 0.01, "issuer": 0}
+        "fee_distribution": {"protocol": 0.01, "validator": 0.01, "issuer": 0},
+        "intent": {
+            "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+            "expected_outcome": "mandate settled and anchored",
+            "contextual_tone": "formal",
+            "statistical_purpose": "validate AP2 and Midnight integration"
+        }
     })
 
     # AP2 flow

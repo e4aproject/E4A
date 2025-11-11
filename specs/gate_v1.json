@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Gate v1 Schema",
+  "type": "object",
+  "properties": {
+    "gate_id": { "type": "string", "description": "Unique identifier for the gate." },
+    "mandate_id": { "type": "string", "description": "The ID of the mandate that triggered this gate." },
+    "status": { "type": "string", "enum": ["pending", "approved", "rejected"], "description": "Current status of the gate." },
+    "required_approvers": { "type": "array", "items": { "type": "string" }, "description": "List of DIDs or roles required to approve the gate." },
+    "approvals": { "type": "array", "items": { "type": "string" }, "description": "List of DIDs that have approved the gate." },
+    "rejections": { "type": "array", "items": { "type": "string" }, "description": "List of DIDs that have rejected the gate." },
+    "created_at": { "type": "string", "format": "date-time", "description": "Timestamp of gate creation." },
+    "expires_at": { "type": ["string", "null"], "format": "date-time", "description": "Optional timestamp for automatic gate expiration." },
+    "payload": { "type": "object", "description": "Relevant data from the mandate for human review." }
+  },
+  "required": ["gate_id", "mandate_id", "status", "required_approvers", "created_at", "payload"]
+}

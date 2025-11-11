@@ -9,7 +9,7 @@ Midnight Adapter (simulated)
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 
 STORE = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'midnight_store.json')
 
@@ -45,7 +45,7 @@ class MidnightAdapter:
         state['proofs'][anchor_ref] = {
             "anchor_ref": anchor_ref,
             "payload_summary": {"issuer": payload.get('issuer'), "beneficiary": payload.get('beneficiary')},
-            "created_at": datetime.utcnow().isoformat() + 'Z'
+            "created_at": datetime.now(UTC).isoformat().replace('+00:00', 'Z')
         }
         _save(state)
         return {"anchor_ref": anchor_ref, "status": "created"}
@@ -60,6 +60,6 @@ class MidnightAdapter:
         if anchor_ref not in state.get('proofs', {}):
             return {"status": "error", "reason": "proof_not_found"}
         state['proofs'][anchor_ref]['settlement_ref'] = settlement_ref
-        state['proofs'][anchor_ref]['published_at'] = datetime.utcnow().isoformat() + 'Z'
+        state['proofs'][anchor_ref]['published_at'] = datetime.now(UTC).isoformat().replace('+00:00', 'Z')
         _save(state)
         return {"status": "published", "anchor_ref": anchor_ref, "settlement_ref": settlement_ref}

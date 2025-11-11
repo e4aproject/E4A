@@ -8,7 +8,7 @@ Ethereum Adapter (simulated)
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, UTC
 
 STORE = os.path.join(os.path.dirname(__file__), '..', '..', 'data', 'chain_anchors.json')
 
@@ -43,7 +43,7 @@ class EthAdapter:
             "proof_hash": proof_hash,
             "chain": self.chain,
             "tx_hash": tx_hash,
-            "timestamp": datetime.utcnow().isoformat() + 'Z'
+            "timestamp": datetime.now(UTC).isoformat().replace('+00:00', 'Z')
         }
         _save(state)
         return {"status": "submitted", "tx_hash": tx_hash}

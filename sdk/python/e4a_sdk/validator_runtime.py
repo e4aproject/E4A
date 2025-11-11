@@ -9,8 +9,13 @@ Provides:
 import os
 import json
 from datetime import datetime, timedelta
+from jsonschema import validate, ValidationError
 
 LOG_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mission_log.jsonl')
+SPEC = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'specs', 'mandate_v2.json')
+
+with open(SPEC, 'r') as _f:
+    MANDATE_SCHEMA = json.load(_f)
 
 
 class ValidatorRuntime:
@@ -20,6 +25,12 @@ class ValidatorRuntime:
 
     def start_node(self):
         print(f"Starting validator node {self.node_id} (phase 1 reference)")
+
+    def validate_mandate(self, mandate):
+        try:
+            validate(instance=mandate, schema=MANDATE_SCHEMA)
+        except ValidationError as e:
+            raise ValueError(f"Mandate validation error: {e.message}")
 
     def _read_recent_entries(self, window_seconds=3600):
         entries = []
