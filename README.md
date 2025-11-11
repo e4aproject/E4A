@@ -1,71 +1,67 @@
 # Ethos4Agents (E4A) Protocol
 
-Ethos4Agents (E4A): An open protocol for organizational culture among multi‑agent systems
-An open protocol enabling multi‑agent systems to express, share, and enforce organizational culture, governance primitives, and safety invariants while interoperating across diverse runtimes and administrative domains.
+**An open protocol for organizational culture among multi-agent systems.**
 
-E4A complements existing standards such as MCP, A2A, and AP2 by reusing their interoperability and payments conventions where relevant while adding a focused layer for culture, governance, research, learning, and auditability. Where A2A standardizes agent discovery and messaging and AP2 addresses payments and economic rails, E4A defines the canonical artifacts and flows agents use to carry organizational intent: mandates, mission_log entries, human‑in‑the‑loop gates, verifier payloads, learning and self-improvement, and cultural audits. E4A makes these artifacts first‑class so agents can coordinate complex, long‑running work that honors shared norms, preserves traceability, and enforces minimal safety invariants across rails and implementations.
+E4A enables multi-agent systems to express, share, and enforce organizational culture, governance primitives, and safety invariants while interoperating across diverse runtimes and administrative domains. It complements existing standards like A2A and AP2 by adding a focused layer for culture, governance, and auditability.
 
-# Theoretical foundation and practical value
-E4A’s power comes from being a standards-first protocol that is explicitly grounded in time‑tested theories of organizational culture and the science of learning; it operationalizes ideas from organizational culture, psychology, sociology, and constructivist learning so agents coordinate with the same norms, incentives, and traceability humans rely on in proven resilient and healthy organizations. 
+## Why E4A?
 
-E4A does not invent governance ad hoc; rather, it encodes verifiable cultural primitives like roles, mandate lifecycles, reflection windows, human‑in‑the‑loop gates, learning frameworks, and audit trails that map directly to measurable organizational constructs such as accountability, psychological safety, and decision transparency.
+As multi-agent systems become the norm, cultural alignment and accountable governance are critical for reliable coordination at scale. E4A exists to:
+-   **Establish Norms:** Ground multi-agent systems in a consistent set of organizational norms.
+-   **Enable Collaboration:** Make culture and governance first-class artifacts that agents can reason about.
+-   **Promote Open Standards:** Extend A2A and AP2 with auditable cultural primitives.
+-   **Ensure Accountability:** Maintain transparency through signed mandates and audit trails.
+-   **Reduce Risk:** Enforce human-in-the-loop gates and safety thresholds.
+-   **Accelerate Impact:** Provide reusable constructs that map to well-tested organizational theories.
 
-By turning these constructs into first‑class artifacts and validator rules, E4A makes it possible to automate both complex, multi‑agent and intersystem multi-agent workflows while preserving human‑centered checks, research traceability, and composable safety layers. The result is a protocol is both rigorous and practical. It is interoperable with existing messaging and payments rails, decoupled from any single runtime, and auditable end‑to‑end, enabling agents to scale collaborative work in ways that mirror proven human organizational practice rather than simple re‑inventing governance from scratch.
+## Getting Started
 
-# Why E4A
-As the number of multi‑agent systems become the norm, technologically cultural alignment and accountable governance will become the decisive factors that let agents coordinate reliably and at scale. E4A exists to:
-- Establish a minimum expectation that all multi-agent systems are grounded in a consistent and research-based set of organizational norms. 
-- Enable richer collaboration by making culture and governance first‑class artifacts agents can read, write, and reason about.
-- Establish open standards that extend A2A messaging and AP2 economic rails with auditable cultural primitives, enabling interoperable toolchains and broad community adoption.
-- Maintain opacity for proprietary implementations while ensuring accountability through signed mandates, mission_log audit trails, and verifier attestations.
-- Reduce systemic risk by enforcing human‑in‑the‑loop gates, safety thresholds, and validator rules so sensitive actions require configurable human oversight and/or verified mandates.
-- Accelerate engineering impact by providing reusable, measurable constructs that map to well‑tested organizational theories, letting teams build complex, multi‑agent applications that are resilient and healthy organizations.
+This guide will help you get the E4A project up and running on your local machine for development and testing purposes.
 
-# Goals
-- Define canonical artifacts: mandate, mission_log, research_manifest, verifier payloads.
-- Provide a reference implementation that demonstrates safe, auditable flows.
-- Enable conformance, attestation, and registry-driven interoperability.
-- Preserve openness while enforcing minimal safety invariants by default.
+### Prerequisites
 
+-   Python 3.10+
+-   pip
+-   Git
 
--------------------------------------------------------------------------------------------
+### Installation
 
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/e4aproject/E4A.git
+    cd E4A
+    ```
 
-# E4A Phase 1 - Quick Start
+2.  **Install the dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-Files created:
-- core/mandate_engine.py
-- core/scribe_agent.py
-- core/validator_runtime.py
-- specs/mandate_v1.json
-- specs/charter_v1.json
-- specs/attestation_v1.json
-- data/mission_log.jsonl (created on first run)
+### Running the Tests
 
-Requirements:
-- Python 3.9+
-- pip install jsonschema
+To ensure everything is set up correctly, run the test suite:
 
-Quick commands (from repo root):
-1) Install:
-   pip install jsonschema
+```bash
+pytest
+```
 
-2) Create a simple mandate (demo):
-   python -c "from core.scribe_agent import ScribeAgent; from core.mandate_engine import MandateEngine; s=ScribeAgent(); m=MandateEngine(scribe=s); print(m.create_mandate({'issuer':'did:ex:alice','beneficiary':'did:ex:bob','amount':10,'currency':'USD'}))"
+## Quick Start
 
-3) Run validator reflexivity tick:
-   python -c "from core.validator_runtime import ValidatorRuntime; v=ValidatorRuntime(); print(v.reflexivity_tick())"
+The quickest way to see E4A in action is to follow the [Quickstart Guide](docs/quickstart.md). This will walk you through creating a mandate, validating it, and anchoring it.
 
-Notes:
-- These modules are reference stubs to bootstrap Phase 1. Replace mission_log persistence and in-memory stores with production stores in later phases.
-- Use the schemas in specs/ to extend validation and to design adapters.
+## Code Quality
 
+This project uses a suite of tools to enforce high code quality standards. These tools are run automatically on every commit and pull request.
 
-## Publishing note
+-   **Linting:** `flake8` is used to check for style and logical errors.
+-   **Formatting:** `black` is used to ensure a consistent code style.
+-   **Type Checking:** `mypy` is used to check for type errors.
+-   **Security:** `bandit` is used to scan for common security vulnerabilities.
+-   **Testing:** `pytest` is used to run the test suite, and `coverage.py` is used to measure test coverage.
 
-This repository uses `pyproject.toml` as the canonical Python packaging metadata source. The npm package is scoped under `@e4aproject` and is configured to publish publicly (`publishConfig.access = public` in `package.json`).
+You can run these checks locally using the same commands found in the `.github/workflows/ci.yml` file.
 
-If you rely on `setup.cfg` or generated egg-info metadata, prefer updating `pyproject.toml` as the authoritative source for future releases.
+## Publishing
 
-
+This repository uses `pyproject.toml` as the canonical Python packaging metadata source. The npm package is scoped under `@e4aproject` and is configured to publish publicly.
 

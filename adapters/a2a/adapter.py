@@ -20,12 +20,32 @@ def _load_schema(name: str) -> Dict[str, Any]:
 MANDATE_SCHEMA = _load_schema("mandate_v1.json")
 
 class E4A_A2A_Adapter:
+    """
+    The E4A_A2A_Adapter provides a bridge between the E4A SDK and an A2A (Agent-to-Agent) network.
+    It exposes the core functionality of the MandateEngine and GovernanceKernel to other agents.
+    """
     def __init__(self, scribe: ScribeAgent = None):
+        """
+        Initializes the E4A_A2A_Adapter.
+
+        Args:
+            scribe: An optional ScribeAgent instance. If not provided, a new one will be created.
+        """
         self.scribe = scribe or ScribeAgent()
         self.mandate_engine = MandateEngine(scribe=self.scribe)
         self.gov = GovernanceKernel()
 
     def _validate(self, payload: Dict[str, Any], schema_name: str):
+        """
+        Validates a payload against a given JSON schema.
+
+        Args:
+            payload: The payload to validate.
+            schema_name: The name of the schema to validate against.
+
+        Raises:
+            ValueError: If the payload fails schema validation.
+        """
         schema = _load_schema(schema_name)
         try:
             validate(instance=payload, schema=schema)
@@ -33,7 +53,18 @@ class E4A_A2A_Adapter:
             raise ValueError(f"Payload failed schema validation: {e.message}")
 
     def create_mandate(self, data_part: Dict[str, Any]) -> Dict[str, Any]:
-        """Skill: create-mandate"""
+        """
+        Creates a new mandate.
+
+        This method validates the input data against the mandate schema, creates the mandate
+        using the MandateEngine, records the creation in the scribe, and returns the result.
+
+        Args:
+            data_part: A dictionary containing the mandate data.
+
+        Returns:
+            A dictionary containing the status and the created mandate.
+        """
         self._validate(data_part, "mandate_v1.json")
         mandate = self.mandate_engine.create_mandate(data_part)
         self.scribe.record("mandate_created", payload=mandate, summary="Mandate created via A2A Adapter")

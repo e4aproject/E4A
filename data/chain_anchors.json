@@ -413,6 +413,18 @@
       "chain": "ethereum-test",
       "tx_hash": "0x035a16b324ab4dd68c72d48f8644179e",
       "timestamp": "2025-11-09T13:37:36.069070Z"
+    },
+    "0x46ac62c1561449409493a27339b58363": {
+      "proof_hash": "d412d5ec-bdc8-4a62-a654-5a7ad0f91d98",
+      "chain": "ethereum",
+      "tx_hash": "0x46ac62c1561449409493a27339b58363",
+      "timestamp": "2025-11-11T22:49:50.932760Z"
+    },
+    "0xb4695c2cdca94f899d494e94de139f34": {
+      "proof_hash": "ed5ab056-8a08-405c-8bf0-0a17c1b06cf5",
+      "chain": "ethereum-test",
+      "tx_hash": "0xb4695c2cdca94f899d494e94de139f34",
+      "timestamp": "2025-11-11T22:49:50.977987Z"
     }
   }
 }

@@ -697,6 +697,28 @@
       "signatures": [
         "sig-tester-fb6cc45a-b627-4c0f-b534-8f2d396391f9"
       ]
+    },
+    "5705b971-d261-40b7-860e-320d519c0542": {
+      "issuer": "did:ex:alice",
+      "beneficiary": "did:ex:bob",
+      "amount": 42,
+      "currency": "USD",
+      "fee_distribution": {
+        "protocol": 0.01,
+        "validator": 0.01,
+        "issuer": 0
+      },
+      "intent": {
+        "goal": "create, sign, submit AP2 mandate and anchor on Midnight",
+        "expected_outcome": "mandate settled and anchored",
+        "contextual_tone": "formal",
+        "statistical_purpose": "validate AP2 and Midnight integration"
+      },
+      "mandate_id": "5705b971-d261-40b7-860e-320d519c0542",
+      "created_at": "2025-11-11T22:49:50.969631Z",
+      "signatures": [
+        "sig-tester-5705b971-d261-40b7-860e-320d519c0542"
+      ]
     }
   },
   "submissions": {
@@ -908,6 +930,12 @@
       "submission_id": "c10dd5b9-0b5e-44b4-ab74-b570a77f6762",
       "mandate_id": "fb6cc45a-b627-4c0f-b534-8f2d396391f9",
       "submitted_at": "2025-11-09T13:37:36.065066Z",
+      "status": "settled"
+    },
+    "e737a9ba-5234-4012-b35e-59f47d76e547": {
+      "submission_id": "e737a9ba-5234-4012-b35e-59f47d76e547",
+      "mandate_id": "5705b971-d261-40b7-860e-320d519c0542",
+      "submitted_at": "2025-11-11T22:49:50.975295Z",
       "status": "settled"
     }
   }

@@ -689,6 +689,26 @@
       "created_at": "2025-11-09T13:37:36.067314Z",
       "settlement_ref": "0x035a16b324ab4dd68c72d48f8644179e",
       "published_at": "2025-11-09T13:37:36.070654Z"
+    },
+    "d412d5ec-bdc8-4a62-a654-5a7ad0f91d98": {
+      "anchor_ref": "d412d5ec-bdc8-4a62-a654-5a7ad0f91d98",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-11-11T22:49:50.930322Z",
+      "settlement_ref": "0x46ac62c1561449409493a27339b58363",
+      "published_at": "2025-11-11T22:49:50.934108Z"
+    },
+    "ed5ab056-8a08-405c-8bf0-0a17c1b06cf5": {
+      "anchor_ref": "ed5ab056-8a08-405c-8bf0-0a17c1b06cf5",
+      "payload_summary": {
+        "issuer": "did:ex:alice",
+        "beneficiary": "did:ex:bob"
+      },
+      "created_at": "2025-11-11T22:49:50.976764Z",
+      "settlement_ref": "0xb4695c2cdca94f899d494e94de139f34",
+      "published_at": "2025-11-11T22:49:50.979018Z"
     }
   }
 }

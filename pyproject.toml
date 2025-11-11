@@ -22,3 +22,10 @@ e4a = "cli.cli_main:cli"
 
 [tool.setuptools.packages.find]
 where = ["sdk/python"]
+
+[tool.black]
+line-length = 120
+
+[tool.mypy]
+ignore_missing_imports = true
+

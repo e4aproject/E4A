@@ -3,7 +3,12 @@ fastapi
 uvicorn
 typer
 requests
-pyyaml 
+pyyaml
 uvicorn
 httpx
 jsonschema
+flake8
+black
+mypy
+coverage
+bandit
