@@ -1,71 +1,47 @@
-# adapters/a2a/adapter.py
 import json
-from pathlib import Path
-from typing import Dict, Any
-from jsonschema import validate, ValidationError
 
-# Assumes SDK is structured as sdk/python/e4a_sdk
-from sdk.python.e4a_sdk.mandate_engine import MandateEngine, MandateEngineError
-from sdk.python.e4a_sdk.governance_kernel import GovernanceKernel
-from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
+import typer
 
-SPEC_DIR = Path(__file__).resolve().parents[2] / "specs"
+from cli.e4a_cli import app as e4a_app
+from sdk.python.e4a_sdk.client import E4AClient
+from sdk.python.e4a_sdk.config_loader import load_config
 
-def _load_schema(name: str) -> Dict[str, Any]:
-    path = SPEC_DIR / name
-    if not path.exists():
-        raise FileNotFoundError(f"Schema not found: {path}")
-    return json.loads(path.read_text())
+cli = typer.Typer()
+config = load_config()
 
-MANDATE_SCHEMA = _load_schema("mandate_v1.json")
 
-class E4A_A2A_Adapter:
-    """
-    The E4A_A2A_Adapter provides a bridge between the E4A SDK and an A2A (Agent-to-Agent) network.
-    It exposes the core functionality of the MandateEngine and GovernanceKernel to other agents.
-    """
-    def __init__(self, scribe: ScribeAgent = None):
-        """
-        Initializes the E4A_A2A_Adapter.
+@cli.callback(invoke_without_command=True)
+def main(ctx: typer.Context):
+    """E4A CLI — use --help for subcommands."""
+    if ctx.invoked_subcommand is None:
+        typer.echo("E4A CLI — use subcommands. Try 'e4a --help'.")
 
-        Args:
-            scribe: An optional ScribeAgent instance. If not provided, a new one will be created.
-        """
-        self.scribe = scribe or ScribeAgent()
-        self.mandate_engine = MandateEngine(scribe=self.scribe)
-        self.gov = GovernanceKernel()
 
-    def _validate(self, payload: Dict[str, Any], schema_name: str):
-        """
-        Validates a payload against a given JSON schema.
+cli.add_typer(e4a_app, name="e4a")
 
-        Args:
-            payload: The payload to validate.
-            schema_name: The name of the schema to validate against.
 
-        Raises:
-            ValueError: If the payload fails schema validation.
-        """
-        schema = _load_schema(schema_name)
-        try:
-            validate(instance=payload, schema=schema)
-        except ValidationError as e:
-            raise ValueError(f"Payload failed schema validation: {e.message}")
+@cli.command("sdk-test")
+def sdk_test():
+    """Quick SDK smoke test using local config.api host."""
+    cfg = load_config()
+    base_url = cfg.get("api", {}).get("host", "http://localhost:8000")
+    typer.echo(f"Running E4A SDK smoke test against: {base_url}")
+    try:
+        client = E4AClient(base_url=base_url)
+        info = client.health()
+        typer.echo(json.dumps(info, indent=2))
+    except Exception as e:
+        typer.echo(typer.style("⚠️  SDK test failed:", fg=typer.colors.RED, bold=True))
+        typer.echo(f"Error: {e}")
+        typer.echo(
+            "\nTip: Ensure the E4A API server is running.\n"
+            "  uvicorn api.server:app --reload --port 8000\n"
+            "Then rerun the prompt."
+        )
 
-    def create_mandate(self, data_part: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Creates a new mandate.
 
-        This method validates the input data against the mandate schema, creates the mandate
-        using the MandateEngine, records the creation in the scribe, and returns the result.
+app = cli
 
-        Args:
-            data_part: A dictionary containing the mandate data.
 
-        Returns:
-            A dictionary containing the status and the created mandate.
-        """
-        self._validate(data_part, "mandate_v1.json")
-        mandate = self.mandate_engine.create_mandate(data_part)
-        self.scribe.record("mandate_created", payload=mandate, summary="Mandate created via A2A Adapter")
-        return {"status": "created", "mandate": mandate}
+if __name__ == "__main__":
+    cli()

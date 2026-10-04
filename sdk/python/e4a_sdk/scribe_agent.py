@@ -1,83 +1,96 @@
-# core/scribe_agent.py
-from datetime import datetime, timezone
-import json
-import uuid
-from pathlib import Path
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel, Field
+
+from sdk.python.e4a_sdk.gate_engine import GateEngineError
+from sdk.python.e4a_sdk.governance_kernel import GovernanceKernel
+from sdk.python.e4a_sdk.mandate_engine import MandateEngine, MandateEngineError
+from sdk.python.e4a_sdk.reputation_index import ReputationIndex
+from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
 
 
-class ScribeAgent:
-    """
-    The ScribeAgent records events, mandates, and audits to a persistent or in-memory mission log.
-    Backward compatible with legacy tests that used 'log_path' and both styles of append_entry().
-    """
+def create_app():
+    app = FastAPI(title="E4A Protocol API", version="1.0")
 
-    def __init__(self, node_id: str = None, log_path: str = None):
-        self.node_id = node_id or f"scribe-{uuid.uuid4().hex[:8]}"
-        self.ledger = []
-        self.log_path = Path(log_path) if log_path else None
+    scribe = ScribeAgent(node_id="api-node")
+    engine = MandateEngine(scribe)
+    gov = GovernanceKernel()
+    rep = ReputationIndex()
 
-        # Prepare log file if needed
-        if self.log_path:
-            self.log_path.parent.mkdir(parents=True, exist_ok=True)
-            self.log_path.touch(exist_ok=True)
+    class IntentPart(BaseModel):
+        goal: str
+        expected_outcome: str
+        contextual_tone: str
+        statistical_purpose: str
+        requires_approval: list[str] = Field(default_factory=list)
 
-    def record(self, entry_type: str, payload: dict, summary: str):
-        """Primary method for writing an entry."""
-        entry = {
-            "entry_type": entry_type,
-            "entry_id": f"entry-{int(datetime.now(timezone.utc).timestamp())}",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
-            "node_id": self.node_id,
-            "payload": payload,
-            "narrative_summary": summary,
-        }
+    class MandateRequest(BaseModel):
+        issuer: str
+        beneficiary: str
+        amount: float
+        currency: str = "USD"
+        intent: IntentPart
 
-        self.ledger.append(entry)
-        if self.log_path:
-            with open(self.log_path, "a") as f:
-                f.write(json.dumps(entry) + "\n")
+    @app.post("/mandates/create")
+    def create_mandate(req: MandateRequest):
+        try:
+            result = engine.create_mandate(req.model_dump())
+            return {"status": "created", "mandate": result}
+        except (MandateEngineError, ValueError) as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-        return entry
+    @app.post("/mandates/execute/{mandate_id}")
+    def execute_mandate(mandate_id: str):
+        try:
+            result = engine.execute_mandate(mandate_id)
+            return {"status": "executed", "mandate_id": mandate_id, "result": result}
+        except MandateEngineError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
 
-    # ✅ Fully backward-compatible append_entry()
-    def append_entry(self, *args, **kwargs):
-        """
-        Legacy alias for record(). Supports both:
-          append_entry(entry_type, payload, summary)
-        and
-          append_entry(entry_dict)
-        """
-        # Case 1: single dict-style call
-        if len(args) == 1 and isinstance(args[0], dict):
-            entry = args[0]
-            # Ensure required keys
-            entry.setdefault("entry_id", f"entry-{int(datetime.now(timezone.utc).timestamp())}")
-            entry.setdefault("timestamp", datetime.now(timezone.utc).isoformat())
-            entry.setdefault("node_id", self.node_id)
-            self.ledger.append(entry)
-            if self.log_path:
-                with open(self.log_path, "a") as f:
-                    f.write(json.dumps(entry) + "\n")
-            return entry
+    @app.get("/reputation")
+    def get_reputation():
+        rep.ingest_from_scribe(scribe)
+        return {"reputation": rep.get_all()}
 
-        # Case 2: modern call pattern
-        elif len(args) == 3:
-            return self.record(*args)
+    class Proposal(BaseModel):
+        id: str
+        action: str
+        description: str
 
-        # Case 3: explicit keyword args
-        elif "entry_type" in kwargs and "payload" in kwargs and "summary" in kwargs:
-            return self.record(kwargs["entry_type"], kwargs["payload"], kwargs["summary"])
+    @app.post("/governance/propose")
+    def propose_change(p: Proposal):
+        return {"status": "proposed", "proposal": gov.propose(p.id, p.action, p.description)}
 
-        else:
-            raise TypeError("append_entry() must be called with either (dict) or (entry_type, payload, summary)")
+    @app.post("/governance/vote")
+    def vote_proposal(pid: str, vote: str):
+        return {"status": "voted", "result": gov.vote(pid, vote)}
 
-    def get_entries(self, entry_type: str = None):
-        if entry_type:
-            return [e for e in self.ledger if e["entry_type"] == entry_type]
-        return self.ledger
+    @app.post("/governance/enact")
+    def enact_proposal(pid: str):
+        return {"status": "enacted", "result": gov.enact(pid)}
 
-    def dump_json(self, path=None):
-        path = Path(path or self.log_path or "scribe_ledger.json")
-        with open(path, "w") as f:
-            json.dump(self.ledger, f, indent=2)
-        return str(path)
+    @app.get("/gates/pending")
+    def get_pending_gates():
+        pending_gates = [gate for gate in engine.gate_engine.gates.values() if gate["status"] == "pending"]
+        return {"pending_gates": pending_gates}
+
+    @app.post("/gates/{gate_id}/approve")
+    def approve_gate(gate_id: str, approver_id: str):
+        try:
+            gate = engine.gate_engine.aprove_gate(gate_id, approver_id)
+            return {"status": "success", "gate": gate}
+        except GateEngineError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.post("/gates/{gate_id}/reject")
+    def reject_gate(gate_id: str, rejector_id: str):
+        try:
+            gate = engine.gate_engine.reject_gate(gate_id, rejector_id)
+            return {"status": "success", "gate": gate}
+        except GateEngineError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    @app.get("/health")
+    def health_check():
+        return {"status": "ok", "entries": len(scribe.ledger)}
+
+    return app
