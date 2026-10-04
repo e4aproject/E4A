@@ -1,18 +1,13 @@
-"""
-Minimal Mandate Engine (Phase 1 reference implementation).
-
-Responsibilities:
-- validate mandate payloads against spec (JSON Schema)
-- create mandates and sub-mandates (idempotent via replay_nonce when provided)
-- execute mandates by calling adapters (mocked)
-- compute protocol/validator/issuer fee splits
-"""
-
+# sdk/python/e4a_sdk/mandate_engine.py
 import json
 import os
+import sqlite3
 import uuid
-from datetime import datetime, UTC
-from jsonschema import validate, ValidationError
+from datetime import UTC, datetime
+from pathlib import Path
+
+from jsonschema import ValidationError, validate
+
 from .gate_engine import GateEngine, GateEngineError
 
 SPEC = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'specs', 'mandate_v2.json')
@@ -26,16 +21,43 @@ class MandateEngineError(Exception):
 
 
 class MandateEngine:
-    def __init__(self, scribe=None):
-        # Reload schema to ensure latest version is always used in tests
+    def __init__(self, scribe=None, db_path: str | None = None):
         global MANDATE_SCHEMA
         with open(SPEC, 'r') as _f:
             MANDATE_SCHEMA = json.load(_f)
 
-        # in-memory store for Phase 1 (replace with persistence later)
+        base_dir = Path(__file__).resolve().parent.parent / "data"
+        base_dir.mkdir(parents=True, exist_ok=True)
+        self.db_path = Path(db_path) if db_path else base_dir / "e4a_state.db"
         self.mandates = {}
         self.scribe = scribe
-        self.gate_engine = GateEngine()
+        self.gate_engine = GateEngine(db_path=str(self.db_path))
+        self._init_db()
+        self._load_mandates()
+
+    def _connect(self):
+        conn = sqlite3.connect(self.db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
+
+    def _init_db(self):
+        with self._connect() as conn:
+            conn.execute(
+                "CREATE TABLE IF NOT EXISTS mandates (mandate_id TEXT PRIMARY KEY, payload TEXT NOT NULL)"
+            )
+
+    def _load_mandates(self):
+        with self._connect() as conn:
+            rows = conn.execute("SELECT mandate_id, payload FROM mandates").fetchall()
+        for row in rows:
+            self.mandates[row["mandate_id"]] = json.loads(row["payload"])
+
+    def _save_mandate(self, mandate):
+        with self._connect() as conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO mandates (mandate_id, payload) VALUES (?, ?)",
+                (mandate["mandate_id"], json.dumps(mandate, default=str)),
+            )
 
     def validate_mandate(self, mandate):
         try:
@@ -48,11 +70,8 @@ class MandateEngine:
         if not mandate.get('mandate_id'):
             mandate['mandate_id'] = str(uuid.uuid4())
         mandate.setdefault('created_at', datetime.now(UTC).isoformat().replace('+00:00', 'Z'))
-
-        # validate
         self.validate_mandate(mandate)
 
-        # idempotency via replay_nonce (phase 1: simple scan)
         replay = mandate.get('replay_nonce')
         if replay:
             for m in self.mandates.values():
@@ -60,12 +79,13 @@ class MandateEngine:
                     return m
 
         self.mandates[mandate['mandate_id']] = mandate
+        self._save_mandate(mandate)
 
         if self.scribe:
             self.scribe.append_entry({
                 'entry_type': 'mandate_created',
                 'mandate_id': mandate['mandate_id'],
-                'payload': mandate
+                'payload': mandate,
             })
         return mandate
 
@@ -77,7 +97,6 @@ class MandateEngine:
         sub = dict(subpayload)
         sub.setdefault('parent_mandate_id', parent_id)
 
-        # conditional inheritance: copy certain fields if parent requests it
         if parent.get('inherit_values'):
             sub.setdefault('policy_tags', parent.get('policy_tags', []))
             sub.setdefault('fee_distribution', parent.get('fee_distribution', {}))
@@ -96,29 +115,29 @@ class MandateEngine:
         return {
             'protocol_amount': protocol_share * total,
             'validator_amount': validator_share * total,
-            'issuer_amount': issuer_share * total
+            'issuer_amount': issuer_share * total,
         }
 
     def execute_mandate(self, mandate_id, executor_id='system'):
         mandate = self.mandates.get(mandate_id)
         if not mandate:
+            self._load_mandates()
+            mandate = self.mandates.get(mandate_id)
+        if not mandate:
             raise MandateEngineError('Mandate not found')
 
-        # Check for human approval if required
         required_approvers = mandate.get('intent', {}).get('requires_approval', [])
         if required_approvers:
             gate = self.gate_engine.get_gate_by_mandate_id(mandate_id)
             if gate:
                 if gate['status'] == 'pending':
                     raise MandateEngineError(f"Mandate {mandate_id} requires human approval and is pending. Gate ID: {gate['gate_id']}")
-                elif gate['status'] == 'rejected':
+                if gate['status'] == 'rejected':
                     raise MandateEngineError(f"Mandate {mandate_id} was rejected by human approvers. Gate ID: {gate['gate_id']}")
-                # If approved, proceed
-            else: # Gate not found, create it
+            else:
                 gate = self.gate_engine.create_gate(mandate_id, required_approvers, mandate)
                 raise MandateEngineError(f"Mandate {mandate_id} requires human approval. A new gate (ID: {gate['gate_id']}) has been created and is pending.")
 
-        # Phase 1: mock execution — record action and compute fees
         result = {
             'status': 'executed',
             'executor': executor_id,
@@ -131,14 +150,14 @@ class MandateEngine:
                 'entry_type': 'mandate_executed',
                 'mandate_id': mandate_id,
                 'executor': executor_id,
-                'result': result
+                'result': result,
             })
         return result
 
 
 if __name__ == '__main__':
-    # simple demo run if executed directly
     from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
+
     scribe = ScribeAgent()
     engine = MandateEngine(scribe=scribe)
 
@@ -152,8 +171,8 @@ if __name__ == '__main__':
             'goal': 'transfer funds',
             'expected_outcome': 'funds transferred',
             'contextual_tone': 'formal',
-            'statistical_purpose': 'facilitate transaction'
-        }
+            'statistical_purpose': 'facilitate transaction',
+        },
     }
 
     sample_requires_approval = {
@@ -167,8 +186,8 @@ if __name__ == '__main__':
             'expected_outcome': 'system deployed',
             'contextual_tone': 'urgent',
             'statistical_purpose': 'ensure operational continuity',
-            'requires_approval': ['human-admin', 'human-security']
-        }
+            'requires_approval': ['human-admin', 'human-security'],
+        },
     }
 
     print("\n--- Testing Mandate without Approval ---")
@@ -189,19 +208,12 @@ if __name__ == '__main__':
 
     print("\n--- Approving the pending mandate ---")
     try:
-        # Assuming 'human-admin' approves it
         gate_id = None
         try:
             gate_id = engine.gate_engine.get_gate_status(m_pending['mandate_id'])['gate_id']
         except GateEngineError:
-            # This might happen if the gate was just created and not yet retrieved by ID
-            pass # We'll rely on the error message from execute_mandate to get the gate_id
+            pass
 
-        # This part is a bit hacky for the demo, in a real system, the gate_id would be known
-        # from the error message or a separate API call.
-        # For now, let's assume the gate_id is the same as mandate_id for simplicity in this demo block
-        # In the actual GateEngine, gate_id is distinct. We need to retrieve it.
-        # Let's re-run the execute_mandate to get the error with the gate_id
         try:
             engine.execute_mandate(m_pending['mandate_id'])
         except MandateEngineError as e:
@@ -210,8 +222,6 @@ if __name__ == '__main__':
             if match:
                 gate_id = match.group(1)
                 print(f"Extracted Gate ID: {gate_id}")
-            else:
-                print("Could not extract Gate ID from error message.")
 
         if gate_id:
             engine.gate_engine.approve_gate(gate_id, 'human-admin')
@@ -220,3 +230,372 @@ if __name__ == '__main__':
             print('Execute result after approval:', engine.execute_mandate(m_pending['mandate_id']))
     except MandateEngineError as e:
         print(f"Execution failed after approval attempt: {e}")
+
+__all__ = ["MandateEngine", "MandateEngineError"]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\n
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+n
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"}]}  ,
