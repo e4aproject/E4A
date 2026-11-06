@@ -3,7 +3,10 @@ nav:
   - Home: index.md
   - Project Status: project-status.md
   - Quickstart: quickstart.md
-  - Protocol: protocol/README.md
+  - Protocol:
+      - Overview: protocol/README.md
+      - Specification v1.0 (draft): protocol/spec.md
+      - Test vectors: protocol/test-vectors/README.md
   - Security: security.md
   - Reference:
       - API: reference/api.md

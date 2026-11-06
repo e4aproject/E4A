@@ -1,0 +1,14 @@
+{
+  "mandate": {
+    "issuer": "did:ex:alice",
+    "beneficiary": "did:ex:bob",
+    "intent": {
+      "expected_outcome": "x",
+      "contextual_tone": "formal",
+      "statistical_purpose": "y"
+    }
+  },
+  "expect": "invalid",
+  "error_code": "E4A_VALIDATION_FAILED",
+  "note": "intent.goal is required."
+}

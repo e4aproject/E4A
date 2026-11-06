@@ -1,0 +1,20 @@
+{
+  "mandate": {
+    "issuer": "did:ex:alice",
+    "beneficiary": "did:ex:bob",
+    "intent": {
+      "goal": "transfer funds",
+      "expected_outcome": "funds transferred",
+      "contextual_tone": "formal",
+      "statistical_purpose": "facilitate a transaction"
+    },
+    "attestations": [
+      {
+        "sig": "abc"
+      }
+    ]
+  },
+  "expect": "invalid",
+  "error_code": "E4A_VALIDATION_FAILED",
+  "note": "Objects are closed in 1.0; 'attestations' is reserved for a future version and must be rejected, not silently accepted (spec section 9)."
+}

@@ -67,7 +67,7 @@ venv (CI is configured for Python 3.11; version-specific results may differ).
 |-------|--------|----------|---------------------|----------|---------------|
 | 1. Inspect & baseline | Done | This document; baseline table §1; draft PR #17 | Baseline recorded with commands and failures; prioritized issue inventory exists | None | 2026-11-05 |
 | 2. Documentation system & governance | Done | README maturity note + doc map; ROADMAP rewritten with exit criteria + history; `docs/protocol/README.md` (marked not-yet-normative); quickstart rewritten to the executed flow (script extracted and run: create → idempotent re-submit → mock execute → `mandate_created`/`mandate_executed` in the JSONL log) with a verified "not working yet" list; `docs/security.md` implementation-status table (S12); CONTRIBUTING corrected to the real branching model + release-automation warning (S11); ONBOARDING reading order; CHANGELOG [Unreleased]; status header on `plans/E4A_v1.1.yml`; status banners on `docs/E4A_Level2.1_Validated.md` and `docs/THREAT_MODEL_V2.md`; MkDocs nav extended | One authoritative doc map; no active doc claims unverified functionality as complete/secure/production-ready | None | 2026-11-05 |
-| 3. Lock v1 scope & protocol contract | Not started | — | Canonical schema/version chosen; lifecycle, errors, idempotency, approval, audit, and signature decision specified with test vectors | Maintainer decisions D1–D4 (§5) | — |
+| 3. Lock v1 scope & protocol contract | In progress — draft complete, pending maintainer approval of the PR | `docs/protocol/spec.md`, `docs/protocol/mandate.schema.json`, `docs/protocol/test-vectors/` (9 schema vectors executed against the canonical schema locally: all pass; 8 lifecycle vectors L1–L8) | Canonical schema/version chosen; lifecycle, errors, idempotency, approval, audit, and signature decision specified with test vectors | Maintainer approval of this PR makes the draft normative (see §5) | 2026-11-05 |
 | 4. Repair reference SDK | Not started | — | One validation path; lifecycle enforced; tests for valid/invalid, transitions, approval, expiry, duplicates, persistence, audit | Phase 3 gate | — |
 | 5. Deployable reference service | Not started | — | Versioned API, health/readiness, persistent storage, container local deployment, restart-persistence verified by integration tests | Phase 4; decision D4 | — |
 | 6. Package & release engineering | Not started | — | Clean-env install of the *built artifact* passes import, CLI, and quickstart; CI tests the artifact | Phase 4–5 | — |
@@ -75,14 +75,18 @@ venv (CI is configured for Python 3.11; version-specific results may differ).
 | 8. Security & operational review | Not started | — | Every documented control classified with test evidence; no unresolved critical issue for v1 scope | Phase 4–5 | — |
 | 9. External-user verification & RC | Not started | — | Clean user completes install/deploy/quickstart/TCK from docs alone; RC ready for human approval; nothing published without approval | All prior phases | — |
 
-## 5. Decisions needed from the maintainer
+## 5. Maintainer decisions D1–D4 — DECIDED 2026-11-05
 
-| # | Decision | Why it matters | Recommendation (for maintainer approval) |
-|---|----------|----------------|------------------------------------------|
-| D1 | Canonical mandate schema: v1 or v2? | Every code path, the spec, and the TCK depend on one answer (S1, B8) | Adopt **v2** as canonical v1-of-record (a mandate without an `intent` is hard to govern) and version the protocol explicitly going forward |
-| D2 | Are cryptographic signatures in v1 scope? | Determines the trust model, spec surface, and security claims | If not implemented and tested, state plainly that v1 provides no cryptographic authenticity and defer signing to a later version |
-| D3 | Persistence backend for the reference implementation/deployment | Engine is in-memory today (S4); deployment phase needs a defined store | Define a persistence interface in the SDK; ship one documented local backend (e.g., SQLite or JSON-file) for the reference deployment |
-| D4 | How much API service is in v1 scope? | `api/server.py` exists but is tied to checkout-only imports (S2) | Include a minimal versioned API over the mandate lifecycle as the interoperability demo; defer validator-network services |
+The maintainer approved the recommendations below on 2026-11-05. They are
+embodied in the draft v1 specification (`docs/protocol/spec.md`); approval of
+the pull request carrying that draft makes them normative.
+
+| # | Decision | Resolution |
+|---|----------|------------|
+| D1 | Canonical mandate schema: v1 or v2? | **v2 is canonical** for protocol 1.0 (structured `intent` required), published as `docs/protocol/mandate.schema.json` with explicit versioning (`protocol_version`, schema `$id`), optional `expires_at`, and closed objects. Prototype schemas in `specs/` are superseded for protocol purposes and kept as history. |
+| D2 | Are cryptographic signatures in v1 scope? | **No.** Spec §9 states plainly that 1.0 provides no cryptographic authenticity; actor identifiers are asserted, approvals are not non-repudiable, and 1.0 must not govern real funds or high-impact actions. `attestations` is reserved for a future extension and must be rejected as unknown in 1.0. |
+| D3 | Persistence backend for the reference implementation/deployment | **Store interface + two backends:** embedded SQLite for the reference deployment, in-memory for tests (spec §12). Persisted records carry `protocol_version`; unsupported store versions fail loudly (`E4A_STORE_VERSION`). |
+| D4 | How much API service is in v1 scope? | **A minimal versioned HTTP API** over the mandate lifecycle (create, retrieve, record decision, execute, retrieve audit) is the 1.0 interoperability demonstration (spec §11). Validator-network services are deferred. |
 
 ## 6. Guardrails for this work
 
