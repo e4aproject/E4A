@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from sdk.python.e4a_sdk.mandate_engine import MandateEngine, MANDATE_SCHEMA
-from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
-from sdk.python.e4a_sdk.governance_kernel import GovernanceKernel
-from sdk.python.e4a_sdk.reputation_index import ReputationIndex
-from sdk.python.e4a_sdk.gate_engine import GateEngine, GateEngineError
+from e4a_sdk.mandate_engine import MandateEngine, MANDATE_SCHEMA
+from e4a_sdk.scribe_agent import ScribeAgent
+from e4a_sdk.governance_kernel import GovernanceKernel
+from e4a_sdk.reputation_index import ReputationIndex
+from e4a_sdk.gate_engine import GateEngine, GateEngineError
 
 def create_app():
     app = FastAPI(title="E4A Protocol API", version="1.0")

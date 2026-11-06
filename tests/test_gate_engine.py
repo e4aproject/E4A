@@ -1,7 +1,7 @@
 import pytest
-from sdk.python.e4a_sdk.gate_engine import GateEngine, GateEngineError
-from sdk.python.e4a_sdk.mandate_engine import MandateEngine, MandateEngineError
-from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
+from e4a_sdk.gate_engine import GateEngine, GateEngineError
+from e4a_sdk.mandate_engine import MandateEngine, MandateEngineError
+from e4a_sdk.scribe_agent import ScribeAgent
 
 
 @pytest.fixture
@@ -84,6 +84,10 @@ def test_reject_gate(gate_engine):
 
 
 def test_mandate_engine_integration_pending(mandate_engine):
+    # Spec 1.0 behavior (supersedes the prototype's lazy gate creation):
+    # the gate is created at submission, the mandate is pending_approval,
+    # and execution fails with the stable code E4A_APPROVAL_REQUIRED.
+    from e4a_sdk import errors
     sample_mandate = {
         'issuer': 'did:ex:agent-x',
         'beneficiary': 'did:ex:agent-y',
@@ -98,24 +102,20 @@ def test_mandate_engine_integration_pending(mandate_engine):
         }
     }
     mandate = mandate_engine.create_mandate(sample_mandate)
+    assert mandate['status'] == 'pending_approval'
 
-    with pytest.raises(MandateEngineError, match=r"Mandate .*? requires human approval\. A new gate \(ID: ([a-f0-9-]+)\) has been created and is pending\.") as excinfo:
-        mandate_engine.execute_mandate(mandate['mandate_id'])
-
-    import re
-    match = re.search(r'\(ID: ([a-f0-9-]+)\)', str(excinfo.value))
-    if match:
-        gate_id = match.group(1)
-    else:
-        raise ValueError("Regex did not find Gate ID in error message.")
-
-    # Verify a gate was created
-    gate = mandate_engine.gate_engine.get_gate_status(gate_id)
+    gate = mandate_engine.gate_engine.get_gate_by_mandate_id(mandate['mandate_id'])
+    assert gate is not None
     assert gate['status'] == 'pending'
     assert gate['mandate_id'] == mandate['mandate_id']
 
+    with pytest.raises(MandateEngineError) as excinfo:
+        mandate_engine.execute_mandate(mandate['mandate_id'])
+    assert excinfo.value.code == errors.APPROVAL_REQUIRED
+
 
 def test_mandate_engine_integration_approved(mandate_engine):
+    from e4a_sdk import errors
     sample_mandate = {
         'issuer': 'did:ex:agent-a',
         'beneficiary': 'did:ex:agent-b',
@@ -131,28 +131,20 @@ def test_mandate_engine_integration_approved(mandate_engine):
     }
     mandate = mandate_engine.create_mandate(sample_mandate)
 
-    # Attempt execution, expect pending error and gate creation
-    with pytest.raises(MandateEngineError, match=r"Mandate .*? requires human approval\. A new gate \(ID: ([a-f0-9-]+)\) has been created and is pending\.") as excinfo:
+    with pytest.raises(MandateEngineError) as excinfo:
         mandate_engine.execute_mandate(mandate['mandate_id'])
+    assert excinfo.value.code == errors.APPROVAL_REQUIRED
 
-    import re
-    match = re.search(r'\(ID: ([a-f0-9-]+)\)', str(excinfo.value))
-    if match:
-        gate_id = match.group(1)
-    else:
-        raise ValueError("Regex did not find Gate ID in error message.")
+    decided = mandate_engine.record_decision(mandate['mandate_id'], 'human-manager', 'approve')
+    assert decided['status'] == 'approved'
 
-    # Approve the gate
-    mandate_engine.gate_engine.approve_gate(gate_id, 'human-manager')
-    approved_gate = mandate_engine.gate_engine.get_gate_status(gate_id)
-    assert approved_gate['status'] == 'approved'
-
-    # Now execute the mandate, should succeed
     result = mandate_engine.execute_mandate(mandate['mandate_id'])
     assert result['status'] == 'executed'
+    assert result['mock'] is True
 
 
 def test_mandate_engine_integration_rejected(mandate_engine):
+    from e4a_sdk import errors
     sample_mandate = {
         'issuer': 'did:ex:agent-c',
         'beneficiary': 'did:ex:agent-d',
@@ -168,22 +160,9 @@ def test_mandate_engine_integration_rejected(mandate_engine):
     }
     mandate = mandate_engine.create_mandate(sample_mandate)
 
-    # Attempt execution, expect pending error and gate creation
-    with pytest.raises(MandateEngineError, match=r"Mandate .*? requires human approval\. A new gate \(ID: ([a-f0-9-]+)\) has been created and is pending\.") as excinfo:
+    decided = mandate_engine.record_decision(mandate['mandate_id'], 'human-data-owner', 'reject')
+    assert decided['status'] == 'rejected'
+
+    with pytest.raises(MandateEngineError) as excinfo:
         mandate_engine.execute_mandate(mandate['mandate_id'])
-
-    import re
-    match = re.search(r'\(ID: ([a-f0-9-]+)\)', str(excinfo.value))
-    if match:
-        gate_id = match.group(1)
-    else:
-        raise ValueError("Regex did not find Gate ID in error message.")
-
-    # Reject the gate
-    mandate_engine.gate_engine.reject_gate(gate_id, 'human-data-owner')
-    rejected_gate = mandate_engine.gate_engine.get_gate_status(gate_id)
-    assert rejected_gate['status'] == 'rejected'
-
-    # Attempt execution again, should fail with rejected error
-    with pytest.raises(MandateEngineError, match="was rejected by human approvers"):
-        mandate_engine.execute_mandate(mandate['mandate_id'])
+    assert excinfo.value.code == errors.MANDATE_REJECTED

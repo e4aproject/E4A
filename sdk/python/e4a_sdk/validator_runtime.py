@@ -12,10 +12,8 @@ from datetime import datetime, timedelta
 from jsonschema import validate, ValidationError
 
 LOG_PATH = os.path.join(os.path.dirname(__file__), '..', 'data', 'mission_log.jsonl')
-SPEC = os.path.join(os.path.dirname(__file__), '..', '..', '..', 'specs', 'mandate_v2.json')
 
-with open(SPEC, 'r') as _f:
-    MANDATE_SCHEMA = json.load(_f)
+from .schema import MANDATE_SCHEMA  # canonical schema, bundled in the package
 
 
 class ValidatorRuntime:

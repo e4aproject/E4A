@@ -1,0 +1,123 @@
+{
+  "$id": "https://e4aproject.github.io/E4A/schemas/mandate-1.0.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "description": "Canonical mandate schema for E4A protocol 1.0. Derived from specs/mandate_v2.json per maintainer decision D1 (see docs/project-status.md). Changes from mandate_v2: explicit protocol versioning ($id, protocol_version), optional expires_at, and closed objects (additionalProperties: false) at the top level and inside intent.",
+  "properties": {
+    "amount": {
+      "description": "Optional amount associated with the mandate. In v1 this is record-keeping only; execution is mock and moves no value.",
+      "type": "number"
+    },
+    "beneficiary": {
+      "description": "Actor identifier of the mandate beneficiary.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "created_at": {
+      "description": "Creation timestamp assigned by the implementation when the mandate is stored. Present on stored records and responses; not required on submission.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "currency": {
+      "description": "Optional currency code accompanying amount.",
+      "type": "string"
+    },
+    "expires_at": {
+      "description": "Optional RFC 3339 expiry. An expired mandate MUST NOT be executed (spec section 5).",
+      "format": "date-time",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "fee_distribution": {
+      "description": "Optional fee shares (protocol, validator, issuer) used by the reference implementation's mock fee computation.",
+      "type": "object"
+    },
+    "intent": {
+      "additionalProperties": false,
+      "properties": {
+        "contextual_tone": {
+          "description": "The desired tone or style of interaction (e.g. 'collaborative', 'urgent', 'formal').",
+          "type": "string"
+        },
+        "expected_outcome": {
+          "description": "The desired result or state upon successful completion.",
+          "type": "string"
+        },
+        "goal": {
+          "description": "The explicit objective of the mandate.",
+          "type": "string"
+        },
+        "requires_approval": {
+          "description": "Actor identifiers that must ALL approve before execution; ANY one of them may reject. Absent or empty means no approval is required.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "uniqueItems": true
+        },
+        "statistical_purpose": {
+          "description": "The underlying statistical or meta-level objective of the action.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "goal",
+        "expected_outcome",
+        "contextual_tone",
+        "statistical_purpose"
+      ],
+      "type": "object"
+    },
+    "issuer": {
+      "description": "Actor identifier of the mandate issuer (DID-shaped string; v1 performs no cryptographic verification \u2014 see spec section 9).",
+      "minLength": 1,
+      "type": "string"
+    },
+    "mandate_id": {
+      "description": "Unique mandate identifier. If absent on submission, the implementation assigns one (UUID4) before validation of the stored record.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "parent_mandate_id": {
+      "description": "Parent mandate for sub-mandates; null or absent for top-level mandates.",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "policy_tags": {
+      "description": "Optional free-form policy labels.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "proof_anchor": {
+      "description": "Reserved. External anchoring is deferred in v1; implementations MUST NOT require this field.",
+      "type": "object"
+    },
+    "protocol_version": {
+      "const": "1.0",
+      "description": "Protocol version. Optional on submission; absence means 1.0. Implementations MUST store and return it.",
+      "type": "string"
+    },
+    "replay_nonce": {
+      "description": "Idempotency key. The pair (issuer, replay_nonce) MUST be unique; see spec section 6.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "validator_ref": {
+      "description": "Reserved. Validator networks are deferred in v1; implementations MUST NOT require this field.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "beneficiary",
+    "intent"
+  ],
+  "title": "E4A Mandate \u2014 Protocol 1.0 (canonical)",
+  "type": "object"
+}

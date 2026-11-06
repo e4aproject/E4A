@@ -1,8 +1,8 @@
-from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
-from sdk.python.e4a_sdk.mandate_engine import MandateEngine
+from e4a_sdk.scribe_agent import ScribeAgent
+from e4a_sdk.mandate_engine import MandateEngine
 from adapters.universal_rail_adapter.cardano_midnight_bridge import CardanoMidnightBridge
-from sdk.python.e4a_sdk.governance_kernel import GovernanceKernel
-from sdk.python.e4a_sdk.reputation_index import ReputationIndex
+from e4a_sdk.governance_kernel import GovernanceKernel
+from e4a_sdk.reputation_index import ReputationIndex
 
 
 def test_bridge_and_governance(tmp_path):
