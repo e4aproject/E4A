@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Protocol 1.0 reference service (`api/server.py`): `/v1` endpoints per spec §11 with the stable error envelope, `/health` and `/ready`, environment configuration (`E4A_DB_PATH`, optional `E4A_API_TOKEN`), SQLite persistence by default, plus `Dockerfile`, `docker-compose.yml`, and `docs/deployment.md`. Legacy prototype routes remain, marked deprecated.
 - `docs/project-status.md`: verified baseline, prioritized issue inventory, phase tracking, and maintainer decision log (the single source of truth for implementation status).
 - `docs/protocol/`: home for the normative v1 protocol specification (not yet normative).
 
