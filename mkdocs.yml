@@ -1,6 +1,10 @@
 site_name: E4A Protocol Docs
 nav:
   - Home: index.md
+  - Project Status: project-status.md
+  - Quickstart: quickstart.md
+  - Protocol: protocol/README.md
+  - Security: security.md
   - Reference:
       - API: reference/api.md
       - CLI: reference/cli.md
