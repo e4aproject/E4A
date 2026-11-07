@@ -1,0 +1,14 @@
+{
+  "mandate": {
+    "beneficiary": "did:ex:bob",
+    "intent": {
+      "goal": "transfer funds",
+      "expected_outcome": "funds transferred",
+      "contextual_tone": "formal",
+      "statistical_purpose": "facilitate a transaction"
+    }
+  },
+  "expect": "invalid",
+  "error_code": "E4A_VALIDATION_FAILED",
+  "note": "issuer is required."
+}

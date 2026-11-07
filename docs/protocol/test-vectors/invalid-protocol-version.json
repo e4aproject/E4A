@@ -1,0 +1,16 @@
+{
+  "mandate": {
+    "protocol_version": "2.0",
+    "issuer": "did:ex:alice",
+    "beneficiary": "did:ex:bob",
+    "intent": {
+      "goal": "transfer funds",
+      "expected_outcome": "funds transferred",
+      "contextual_tone": "formal",
+      "statistical_purpose": "facilitate a transaction"
+    }
+  },
+  "expect": "invalid",
+  "error_code": "E4A_UNSUPPORTED_VERSION",
+  "note": "Unknown protocol versions are rejected. (Surfaced via schema const for 1.0; implementations map it to E4A_UNSUPPORTED_VERSION.)"
+}

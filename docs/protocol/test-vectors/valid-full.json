@@ -1,0 +1,32 @@
+{
+  "mandate": {
+    "mandate_id": "tv-full-001",
+    "protocol_version": "1.0",
+    "issuer": "did:ex:alice",
+    "beneficiary": "did:ex:bob",
+    "amount": 100.0,
+    "currency": "USD",
+    "fee_distribution": {
+      "protocol": 0.01,
+      "validator": 0.01,
+      "issuer": 0.01
+    },
+    "policy_tags": [
+      "treasury"
+    ],
+    "replay_nonce": "tv-nonce-001",
+    "expires_at": "2030-01-01T00:00:00Z",
+    "intent": {
+      "goal": "transfer funds",
+      "expected_outcome": "funds transferred",
+      "contextual_tone": "formal",
+      "statistical_purpose": "facilitate a transaction",
+      "requires_approval": [
+        "did:ex:carol",
+        "did:ex:dave"
+      ]
+    }
+  },
+  "expect": "valid",
+  "note": "All optional fields used, including an approval requirement."
+}

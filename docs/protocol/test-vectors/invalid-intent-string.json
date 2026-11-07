@@ -1,0 +1,10 @@
+{
+  "mandate": {
+    "issuer": "did:ex:alice",
+    "beneficiary": "did:ex:bob",
+    "intent": "transfer funds"
+  },
+  "expect": "invalid",
+  "error_code": "E4A_VALIDATION_FAILED",
+  "note": "intent must be an object, not a string."
+}

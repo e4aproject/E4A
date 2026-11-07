@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Any, Dict, List
 
 
 class ReputationIndex:
@@ -21,9 +21,7 @@ class ReputationIndex:
 
         # Store
         self.scores[actor_id] = normalized
-        self.history.setdefault(actor_id, []).append(
-            {"delta": delta, "context": context, "new_score": normalized}
-        )
+        self.history.setdefault(actor_id, []).append({"delta": delta, "context": context, "new_score": normalized})
         return normalized
 
     def get_score(self, actor_id: str) -> float:
@@ -57,7 +55,7 @@ class ReputationIndex:
         except Exception as e:
             print(f"[ReputationIndex] Ingest error: {e}")
 
-    def get_all(self) -> Dict[str, float]:
+    def get_all(self) -> Dict[str, Any]:
         """
         Return all reputation scores and history for inspection or API output.
         """

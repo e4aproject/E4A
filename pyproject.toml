@@ -21,7 +21,11 @@ Repository = "https://github.com/e4aproject/E4A"
 e4a = "cli.cli_main:cli"
 
 [tool.setuptools.packages.find]
-where = ["sdk/python"]
+where = [".", "sdk/python"]
+include = ["api*", "cli*", "e4a_sdk*"]
+
+[tool.setuptools.package-data]
+e4a_sdk = ["schemas/*.json"]
 
 [tool.black]
 line-length = 120

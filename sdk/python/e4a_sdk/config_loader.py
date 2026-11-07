@@ -2,6 +2,7 @@
 Config loader for E4A projects.
 Loads YAML config (config/config.yaml) and exposes a simple Config object.
 """
+
 import os
 import yaml
 from pathlib import Path
@@ -21,7 +22,7 @@ class Config:
         return dict(self._data)
 
 
-def load_config(path: str = None) -> Config:
+def load_config(path: str | None = None) -> Config:
     p = Path(path) if path else DEFAULT_PATH
     if not p.exists():
         # default config if none exists
@@ -29,7 +30,7 @@ def load_config(path: str = None) -> Config:
             "node_id": "e4a-node-1",
             "api": {"host": "http://localhost:8000", "timeout": 5},
             "db": {"type": "json", "path": "data/state.json"},
-            "logging": {"level": "INFO"}
+            "logging": {"level": "INFO"},
         }
         return Config(default)
     with open(p, "r") as fh:

@@ -4,3 +4,4 @@ recursive-include docs *
 recursive-include config *
 recursive-include specs *
 recursive-include examples *
+recursive-include sdk/python/e4a_sdk/schemas *.json

@@ -1,24 +1,56 @@
 # The Ethos4Agents (E4A) Protocol Roadmap
-**Status:** In Progress
-**Last Updated:** 2025-11-01
 
-This roadmap begins with the **Genesis Sprint**, an accelerated effort to establish the core artifacts of E4A. With its completion, we now look toward implementation and ecosystem growth.
+**Status:** Active — strategic direction only.
+**Last updated:** 2026-11-05
 
-### **Phase 1.5: The Bridge (Complete)**
-*   **Goal:** To establish the architectural and philosophical foundation for interoperability.
-*   **Key Outputs:** A restructured repository, a modern CI/CD pipeline, and the core diplomatic, cultural, and security documents. This phase ensures E4A can "speak fluently" with A2A.
+This roadmap states milestones and their **exit criteria**. It does not certify
+completion: verified implementation status lives in
+[docs/project-status.md](docs/project-status.md), which governs whenever the
+two disagree. Progress is measured by exit criteria being met with recorded
+evidence, not by dates.
 
-### **Phase 2: The Forge (Upcoming)**
-*   **Goal:** To build a fully functional, A2A-compliant reference implementation of E4A in Python.
-*   **Deliverables:** `e4a-sdk` Python package, A2A Reference Agent, Validator Node implementation, and a URA prototype.
+## Current milestone: v1 reference implementation
 
-### **Phase 3: The Embassy (Future)**
-*   **Goal:** To drive ecosystem adoption through documentation, partnerships, and developer tools.
-*   **Deliverables:** Public documentation site, Technology Compatibility Kit (TCK), formal ecosystem partnerships.
+**Goal:** one complete, testable mandate lifecycle that a new contributor can
+install, run, and verify — create a mandate, validate it against one canonical
+schema, enforce required approvals, execute (mock execution clearly labelled),
+and produce an auditable record.
 
-### **Phase 4: The Academy (Vision)**
-*   **Goal:** To build the infrastructure for scalable, privacy-preserving, inter-constellation learning.
-*   **Deliverables:**
-    *   Formalize the `WisdomArtifact` schema.
-    *   Build a reference `Weaver` agent for discovering and integrating external learnings.
-    *   Create a prototype "Scholarly Ledger" for publishing `WisdomArtifacts`.
+**Exit criteria:**
+
+- Canonical protocol/schema version locked and specified in
+  `docs/protocol/`, with positive and negative test vectors.
+- Reference SDK enforces the lifecycle on every execution path; no path
+  bypasses validation or a required approval.
+- A clean environment can install the **built artifact** (not just a checkout)
+  and complete the quickstart.
+- An independent conformance suite (TCK) validates protocol behavior from the
+  spec and test vectors without importing implementation internals.
+- Every security property in `docs/security.md` is classified as implemented
+  and tested, partially implemented, extension point, deferred, or not
+  supported — with evidence.
+- Release candidate prepared and approved by the maintainer before anything is
+  published, tagged, or deployed.
+
+## Later milestones (not v1)
+
+- **Interoperability:** A2A/AP2 adapter conformance against the locked v1
+  spec; a Technology Compatibility Kit release for third-party implementers.
+- **Deployment hardening:** documented production deployment profile,
+  independent security review, operational runbooks.
+- **Ecosystem:** documentation site, partnerships, developer tooling.
+- **Learning layer (vision):** formalized `WisdomArtifact` schema, reference
+  Weaver agent, scholarly ledger prototype — all deferred until the v1
+  lifecycle is proven.
+
+## History
+
+Earlier versions of this roadmap (through 2025-11-01) described a **Genesis
+Sprint**, **Phase 1.5 "The Bridge"** (architectural/philosophical foundation —
+documents and repository restructure, recorded as complete at that time),
+**Phase 2 "The Forge"**, **Phase 3 "The Embassy"**, and **Phase 4 "The
+Academy"**. Those phase names are retired. Their artifacts remain in the
+repository as historical and design material; claims in them about
+implementation completeness were superseded by the verified baseline in
+[docs/project-status.md](docs/project-status.md) (November 2026).
+`plans/E4A_v1.1.yml` is likewise historical — see the header in that file.

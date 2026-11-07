@@ -1,0 +1,14 @@
+{
+  "mandate": {
+    "issuer": "did:ex:alice",
+    "beneficiary": "did:ex:bob",
+    "intent": {
+      "goal": "transfer funds",
+      "expected_outcome": "funds transferred",
+      "contextual_tone": "formal",
+      "statistical_purpose": "facilitate a transaction"
+    }
+  },
+  "expect": "valid",
+  "note": "Only the required submission fields. mandate_id/protocol_version/created_at are assigned by the implementation."
+}

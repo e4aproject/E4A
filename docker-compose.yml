@@ -1,0 +1,15 @@
+services:
+  e4a:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Set a token before exposing this service beyond your own machine.
+      # E4A 1.0 actor identities are asserted, not verified (spec section 9).
+      E4A_API_TOKEN: "${E4A_API_TOKEN:-}"
+    volumes:
+      - e4a-data:/data
+    restart: unless-stopped
+
+volumes:
+  e4a-data:
