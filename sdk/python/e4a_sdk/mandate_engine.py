@@ -180,8 +180,11 @@ class MandateEngine:
                 },
             )
 
-        # A mandate whose expiry is already past is stored but expired.
-        record = self._refresh_state(record)
+        # The submission result reports the state at submission (spec
+        # section 4: submit -> created / pending_approval, and lifecycle
+        # vector L7). Time-driven transitions such as expiry are applied
+        # by subsequent operations (get / decide / execute), not silently
+        # folded into the create response.
         return self._public(record)
 
     def create_submandate(self, parent_id, subpayload):
@@ -299,5 +302,9 @@ class MandateEngine:
         record["state"] = "executed"
         self.store.put_mandate(record)
         self._sync_view(record)
-        self._audit("mandate_executed", mandate_id, {"executor": executor_id, "result": result})
+        self._audit(
+            "mandate_executed",
+            mandate_id,
+            {"executor": executor_id, "result": result, "mock": True},
+        )
         return result

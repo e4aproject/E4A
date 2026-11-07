@@ -6,6 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Phase 7 — conformance suite (TCK):** new `conformance/` suite
+  (35 tests) validates the protocol from the spec, normative schema, and
+  test vectors only — no implementation internals — through the public
+  Python API and a black-box HTTP profile. It passes against the
+  reference implementation in-repo and against the installed wheel. The
+  suite caught and fixed three divergences: create-time expiry folding
+  (vector L7), `mock: true` placement in the `mandate_executed` audit
+  payload (spec section 10), and the `/v1` audit response shape — now the
+  array of records the spec requires (section 11).
 - **Phase 6 — packaging & release engineering:** the built artifact now
   installs and runs in a clean environment — the wheel/sdist include the
   `cli` package, the `api` service package, and the bundled canonical

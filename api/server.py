@@ -174,7 +174,8 @@ def create_app(db_path=None, api_token=None):
 
     @app.get("/v1/mandates/{mandate_id}/audit", dependencies=v1)
     def v1_get_audit(mandate_id: str):
-        return {"mandate_id": mandate_id, "audit": engine.get_audit(mandate_id)}
+        # Spec section 11: the success body is the array of audit records.
+        return engine.get_audit(mandate_id)
 
     # ------------------------------------------------------------------
     # Legacy prototype routes (deprecated; superseded by /v1 above)

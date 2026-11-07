@@ -83,7 +83,7 @@ def test_full_lifecycle_over_http(client):
     # Audit trail over HTTP
     r = client.get(f"/v1/mandates/{mid}/audit")
     assert r.status_code == 200
-    types = [e["entry_type"] for e in r.json()["audit"]]
+    types = [e["entry_type"] for e in r.json()]
     for expected in ("mandate_created", "gate_created", "approval_recorded", "gate_approved", "mandate_executed"):
         assert expected in types, types
 
@@ -136,7 +136,7 @@ def test_restart_persistence(tmp_path):
 
         r = c2.get(f"/v1/mandates/{mid}/audit")
         assert r.status_code == 200
-        assert len(r.json()["audit"]) >= 5
+        assert len(r.json()) >= 5
 
 
 def test_token_gate(tmp_path):
