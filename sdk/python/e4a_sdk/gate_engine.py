@@ -57,8 +57,14 @@ class GateEngine:
             raise GateEngineError(f"Gate validation error: {e.message}", code=errors.VALIDATION_FAILED)
 
     # ------------------------------------------------------------------
-    def create_gate(self, mandate_id: str, required_approvers: list, payload: dict,
-                    expires_in_seconds: int = None, expires_at: str = None) -> dict:
+    def create_gate(
+        self,
+        mandate_id: str,
+        required_approvers: list,
+        payload: dict,
+        expires_in_seconds: int | None = None,
+        expires_at: str | None = None,
+    ) -> dict:
         created = _now()
         if expires_at is None and expires_in_seconds:
             expires_at = _iso(created + timedelta(seconds=expires_in_seconds))
@@ -116,9 +122,7 @@ class GateEngine:
         elif any(a in gate["rejections"] for a in gate["required_approvers"]):
             gate["status"] = "rejected"
             changed = True
-        elif len(gate["required_approvers"]) > 0 and all(
-            a in gate["approvals"] for a in gate["required_approvers"]
-        ):
+        elif len(gate["required_approvers"]) > 0 and all(a in gate["approvals"] for a in gate["required_approvers"]):
             gate["status"] = "approved"
             changed = True
         if changed:
@@ -133,9 +137,7 @@ class GateEngine:
         self._check_resolution(gate_id)
         gate = self.gates[gate_id]
         if gate["status"] != "pending":
-            raise GateEngineError(
-                f"Gate {gate_id} is already {gate['status']}", code=errors.INVALID_TRANSITION
-            )
+            raise GateEngineError(f"Gate {gate_id} is already {gate['status']}", code=errors.INVALID_TRANSITION)
         if actor not in gate["required_approvers"]:
             role = "Approver" if decision == "approve" else "Rejector"
             raise GateEngineError(

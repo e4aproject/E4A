@@ -93,25 +93,17 @@ class SQLiteStore:
         self._lock = threading.Lock()
         self._conn = sqlite3.connect(self.path, check_same_thread=False)
         with self._conn:
-            self._conn.execute(
-                "CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT)"
-            )
-            self._conn.execute(
-                "CREATE TABLE IF NOT EXISTS mandates (mandate_id TEXT PRIMARY KEY, record TEXT)"
-            )
+            self._conn.execute("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT)")
+            self._conn.execute("CREATE TABLE IF NOT EXISTS mandates (mandate_id TEXT PRIMARY KEY, record TEXT)")
             self._conn.execute(
                 "CREATE TABLE IF NOT EXISTS gates (gate_id TEXT PRIMARY KEY, mandate_id TEXT, gate TEXT)"
             )
             self._conn.execute(
                 "CREATE TABLE IF NOT EXISTS audit (id INTEGER PRIMARY KEY AUTOINCREMENT, mandate_id TEXT, record TEXT)"
             )
-            row = self._conn.execute(
-                "SELECT value FROM meta WHERE key='protocol_version'"
-            ).fetchone()
+            row = self._conn.execute("SELECT value FROM meta WHERE key='protocol_version'").fetchone()
             if row is None:
-                self._conn.execute(
-                    "INSERT INTO meta (key, value) VALUES ('protocol_version', '1.0')"
-                )
+                self._conn.execute("INSERT INTO meta (key, value) VALUES ('protocol_version', '1.0')")
             else:
                 _check_version(row[0])
 
@@ -127,9 +119,7 @@ class SQLiteStore:
             )
 
     def get_mandate(self, mandate_id):
-        row = self._conn.execute(
-            "SELECT record FROM mandates WHERE mandate_id = ?", (mandate_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT record FROM mandates WHERE mandate_id = ?", (mandate_id,)).fetchone()
         return json.loads(row[0]) if row else None
 
     def find_by_nonce(self, issuer, replay_nonce):
@@ -152,15 +142,11 @@ class SQLiteStore:
             )
 
     def get_gate(self, gate_id):
-        row = self._conn.execute(
-            "SELECT gate FROM gates WHERE gate_id = ?", (gate_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT gate FROM gates WHERE gate_id = ?", (gate_id,)).fetchone()
         return json.loads(row[0]) if row else None
 
     def get_gate_by_mandate(self, mandate_id):
-        row = self._conn.execute(
-            "SELECT gate FROM gates WHERE mandate_id = ?", (mandate_id,)
-        ).fetchone()
+        row = self._conn.execute("SELECT gate FROM gates WHERE mandate_id = ?", (mandate_id,)).fetchone()
         return json.loads(row[0]) if row else None
 
     def all_gates(self):
@@ -176,7 +162,5 @@ class SQLiteStore:
             )
 
     def get_audit(self, mandate_id):
-        rows = self._conn.execute(
-            "SELECT record FROM audit WHERE mandate_id = ? ORDER BY id", (mandate_id,)
-        ).fetchall()
+        rows = self._conn.execute("SELECT record FROM audit WHERE mandate_id = ? ORDER BY id", (mandate_id,)).fetchall()
         return [json.loads(r[0]) for r in rows]

@@ -9,6 +9,7 @@ nav:
       - Test vectors: protocol/test-vectors/README.md
   - Security: security.md
   - Deployment: deployment.md
+  - Releasing: releasing.md
   - Reference:
       - API: reference/api.md
       - CLI: reference/cli.md

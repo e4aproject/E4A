@@ -28,9 +28,7 @@ def _load(name):
     return json.loads((VECTORS / name).read_text())
 
 
-SCHEMA_VECTOR_FILES = sorted(
-    p.name for p in VECTORS.glob("*.json") if p.name != "lifecycle-vectors.json"
-)
+SCHEMA_VECTOR_FILES = sorted(p.name for p in VECTORS.glob("*.json") if p.name != "lifecycle-vectors.json")
 
 
 @pytest.mark.parametrize("filename", SCHEMA_VECTOR_FILES)
@@ -65,6 +63,7 @@ def test_bundled_schema_matches_normative_document():
 # ----------------------------------------------------------------------
 # Lifecycle vectors (docs/protocol/test-vectors/lifecycle-vectors.json)
 # ----------------------------------------------------------------------
+
 
 def _body(name):
     return _load(name)["mandate"]
@@ -141,9 +140,7 @@ def test_L6_idempotent_create_and_nonce_conflict():
     first = engine.create_mandate(body)
     second = engine.create_mandate(body)
     assert second["mandate_id"] == first["mandate_id"]
-    created_events = [
-        e for e in engine.get_audit(first["mandate_id"]) if e["entry_type"] == "mandate_created"
-    ]
+    created_events = [e for e in engine.get_audit(first["mandate_id"]) if e["entry_type"] == "mandate_created"]
     assert len(created_events) == 1
 
     conflicting = dict(body, amount=999)
@@ -185,6 +182,7 @@ def test_L8_unknown_mandate():
 # ----------------------------------------------------------------------
 # Audit + persistence requirements (spec sections 10 and 12)
 # ----------------------------------------------------------------------
+
 
 def test_audit_trail_events_and_shape():
     engine = MandateEngine()

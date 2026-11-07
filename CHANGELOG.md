@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Phase 6 — packaging & release engineering:** the built artifact now
+  installs and runs in a clean environment — the wheel/sdist include the
+  `cli` package, the `api` service package, and the bundled canonical
+  schemas; the CLI was rewritten against the 1.0 SDK (it previously
+  imported a nonexistent `core` package and could not run at all);
+  versions unified at 1.0.1 across Python and npm; CI builds and verifies
+  the artifact in a clean venv (`scripts/verify_installed_artifact.py`);
+  quality gates (flake8, black, mypy, bandit) are green over the shipped
+  code; the release workflow no longer publishes automatically — it is
+  manual-only and never publishes (see `docs/releasing.md`). Quickstart
+  rewritten to the installed-artifact flow.
 
 ### Added
 - Protocol 1.0 reference service (`api/server.py`): `/v1` endpoints per spec §11 with the stable error envelope, `/health` and `/ready`, environment configuration (`E4A_DB_PATH`, optional `E4A_API_TOKEN`), SQLite persistence by default, plus `Dockerfile`, `docker-compose.yml`, and `docs/deployment.md`. Legacy prototype routes remain, marked deprecated.

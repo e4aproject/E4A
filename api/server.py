@@ -31,7 +31,7 @@ from e4a_sdk import errors
 from e4a_sdk.errors import E4AError
 from e4a_sdk.gate_engine import GateEngineError
 from e4a_sdk.governance_kernel import GovernanceKernel
-from e4a_sdk.mandate_engine import MandateEngine, MandateEngineError
+from e4a_sdk.mandate_engine import MandateEngine
 from e4a_sdk.reputation_index import ReputationIndex
 from e4a_sdk.schema import PROTOCOL_VERSION
 from e4a_sdk.scribe_agent import ScribeAgent
@@ -66,9 +66,7 @@ def _error_response(exc):
 
 def _make_store(db_path):
     if db_path == ":memory:":
-        logger.warning(
-            "E4A_DB_PATH=:memory: — data will NOT survive a restart (development mode)"
-        )
+        logger.warning("E4A_DB_PATH=:memory: — data will NOT survive a restart (development mode)")
         return InMemoryStore(), False
     directory = os.path.dirname(os.path.abspath(db_path))
     os.makedirs(directory, exist_ok=True)
@@ -78,7 +76,7 @@ def _make_store(db_path):
 def create_app(db_path=None, api_token=None):
     db_path = db_path if db_path is not None else os.environ.get("E4A_DB_PATH", "./data/e4a-v1.db")
     api_token = api_token if api_token is not None else os.environ.get("E4A_API_TOKEN")
-    if api_token == "":
+    if not api_token:
         api_token = None  # empty means unset (e.g. a blank compose variable)
 
     store, persistent = _make_store(db_path)
@@ -159,8 +157,12 @@ def create_app(db_path=None, api_token=None):
         if x_e4a_actor is not None and x_e4a_actor != req.actor:
             raise HTTPException(
                 status_code=400,
-                detail={"error": {"code": errors.VALIDATION_FAILED,
-                                  "message": "X-E4A-Actor header disagrees with body actor"}},
+                detail={
+                    "error": {
+                        "code": errors.VALIDATION_FAILED,
+                        "message": "X-E4A-Actor header disagrees with body actor",
+                    }
+                },
             )
         return engine.record_decision(mandate_id, req.actor, req.decision)
 

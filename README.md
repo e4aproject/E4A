@@ -14,19 +14,23 @@ E4A enables multi-agent systems to express, share, and enforce organizational cu
 > [docs/project-status.md](docs/project-status.md), which is the single source
 > of truth for implementation status. In short, as of the last verification:
 >
-> - The Python SDK source works from a repository checkout for a minimal
->   mandate flow (create → validate → mock-execute → local audit log), and its
->   13 tests pass when the package path is supplied (see below).
-> - The **packaged install is currently broken**: the built wheel cannot be
->   imported in a clean environment and its `e4a` CLI entry point is missing
->   from the distribution. Repair is tracked in the project status document.
-> - There are **two mandate schema versions** in `specs/` (v1 and v2) and code
->   paths disagree about which is canonical. Choosing one is a pending
->   maintainer decision (see the status document, decision D1).
-> - Governance, validator, and cross-rail components are skeletons, mocks, or
->   empty modules. Security properties described in the docs are design
->   intentions unless the status document records them as implemented and
->   tested.
+> - The Python SDK implements the protocol 1.0 mandate lifecycle
+>   (create → validate against the one canonical schema → approval gates →
+>   mock-execute → audit trail) with SQLite persistence and a `/v1` HTTP
+>   reference service; **49 tests** pass from a plain checkout.
+> - The **built artifact installs and runs in a clean environment**:
+>   wheel and sdist include the SDK with its bundled canonical schemas,
+>   the `e4a` CLI, and the service package; a clean-venv install passes
+>   import, CLI, service, and lifecycle verification. The package is
+>   **not yet published** to PyPI.
+> - One canonical mandate schema is locked (decision D1: the v2 lineage,
+>   published as `docs/protocol/mandate.schema.json`); 1.0 has **no
+>   cryptographic identity** — actor identifiers are asserted (decision
+>   D2) — and must not govern real funds.
+> - Governance, validator, and cross-rail components are skeletons, mocks,
+>   or empty modules, and are outside the v1 release surface. Security
+>   properties described in the docs are design intentions unless the
+>   status document records them as implemented and tested.
 >
 > **Non-goals for v1:** validator staking/quorums, multi-rail settlement,
 > blockchain anchoring, privacy-preserving learning, and production A2A/AP2
@@ -42,10 +46,11 @@ As multi-agent systems become the norm, cultural alignment and accountable gover
 -   **Reduce Risk:** Enforce human-in-the-loop gates and safety thresholds.
 -   **Accelerate Impact:** Provide reusable constructs that map to well-tested organizational theories.
 
-## Getting Started (development, from a source checkout)
+## Getting Started
 
-The packaged install does not work yet (see the maturity note above). The
-verified way to run E4A today is from a clone:
+Build and install the artifact from a clone (the package is not yet on
+PyPI). The full verified path is the [Quickstart](docs/quickstart.md);
+in short:
 
 ### Prerequisites
 
@@ -61,19 +66,22 @@ verified way to run E4A today is from a clone:
     cd E4A
     ```
 
-2.  **Create a virtual environment and install the dependencies:**
+2.  **Create a virtual environment, build, and install the artifact:**
     ```bash
     python3 -m venv .venv
     source .venv/bin/activate
-    pip install -r requirements.txt
+    pip install build
+    python -m build
+    pip install dist/*.whl
+    e4a version
     ```
 
-3.  **Run the tests** (the SDK package lives under `sdk/python`, so its path
-    must be supplied until packaging is repaired):
+3.  **Run the tests** (from the checkout):
     ```bash
-    PYTHONPATH=sdk/python python -m pytest tests/ -q
+    pip install -r requirements.txt
+    python -m pytest tests/ -q
     ```
-    Expected result at the last verification: **13 passed**.
+    Expected result at the last verification: **49 passed**.
 
 ## Quick Start
 
@@ -101,10 +109,16 @@ This project uses a suite of tools intended to enforce code quality standards, c
 -   **Security:** `bandit` is used to scan for common security vulnerabilities.
 -   **Testing:** `pytest` is used to run the test suite, and `coverage.py` is used to measure test coverage.
 
-Note: at the last verification the codebase did **not** pass the flake8/black
-gates (see the status document). Do not treat a green badge claim anywhere as
-evidence; check the status document.
+As of Phase 6, the flake8, black, mypy, and bandit gates pass over the
+shipped code (SDK, CLI, API, tests, scripts) and CI also builds and
+verifies the distribution artifact. Legacy prototype directories are
+excluded from the gates until they are repaired or retired. Do not treat
+a green badge claim anywhere as evidence; check the status document.
 
 ## Publishing
 
-This repository uses `pyproject.toml` as the canonical Python packaging metadata source. The npm package is scoped under `@e4aproject` and is configured to publish publicly. **Do not rely on any published artifact until the status document records a verified release process** — see [docs/PUBLISHING.md](docs/PUBLISHING.md) and the release-engineering phase in the status document.
+Releases are **manual and maintainer-approved**; nothing publishes
+automatically. `pyproject.toml` is the canonical Python packaging
+metadata; the npm package (`@e4aproject/protocol`) is a thin wrapper,
+version-aligned with the Python package. See
+[docs/releasing.md](docs/releasing.md) for the release procedure.

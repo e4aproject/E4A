@@ -20,7 +20,6 @@ stable ``code`` from e4a_sdk.errors. Branch on the code, not the message.
 """
 
 import copy
-import json
 import uuid
 from datetime import datetime, UTC
 
@@ -98,13 +97,19 @@ class MandateEngine:
                 if gate["status"] == "approved" and record["state"] != "approved":
                     record["state"] = "approved"
                     self.store.put_mandate(record)
-                    self._audit("gate_approved", mandate["mandate_id"],
-                                {"gate_id": gate["gate_id"], "approvals": gate["approvals"]})
+                    self._audit(
+                        "gate_approved",
+                        mandate["mandate_id"],
+                        {"gate_id": gate["gate_id"], "approvals": gate["approvals"]},
+                    )
                 elif gate["status"] == "rejected" and record["state"] != "rejected":
                     record["state"] = "rejected"
                     self.store.put_mandate(record)
-                    self._audit("gate_rejected", mandate["mandate_id"],
-                                {"gate_id": gate["gate_id"], "rejections": gate["rejections"]})
+                    self._audit(
+                        "gate_rejected",
+                        mandate["mandate_id"],
+                        {"gate_id": gate["gate_id"], "rejections": gate["rejections"]},
+                    )
                 elif gate["status"] == "expired" and record["state"] != "expired":
                     record["state"] = "expired"
                     self.store.put_mandate(record)
@@ -118,15 +123,11 @@ class MandateEngine:
     def validate_mandate(self, mandate):
         version = mandate.get("protocol_version", PROTOCOL_VERSION)
         if version != PROTOCOL_VERSION:
-            raise MandateEngineError(
-                f"Unsupported protocol_version: {version!r}", code=errors.UNSUPPORTED_VERSION
-            )
+            raise MandateEngineError(f"Unsupported protocol_version: {version!r}", code=errors.UNSUPPORTED_VERSION)
         try:
             validate(instance=mandate, schema=MANDATE_SCHEMA)
         except ValidationError as e:
-            raise MandateEngineError(
-                f"Mandate validation error: {e.message}", code=errors.VALIDATION_FAILED
-            )
+            raise MandateEngineError(f"Mandate validation error: {e.message}", code=errors.VALIDATION_FAILED)
 
     # ------------------------------------------------------------------
     # lifecycle
@@ -169,11 +170,15 @@ class MandateEngine:
                 mandate,
                 expires_at=mandate.get("expires_at"),
             )
-            self._audit("gate_created", mandate["mandate_id"], {
-                "gate_id": gate["gate_id"],
-                "required_approvers": required_approvers,
-                "expires_at": gate["expires_at"],
-            })
+            self._audit(
+                "gate_created",
+                mandate["mandate_id"],
+                {
+                    "gate_id": gate["gate_id"],
+                    "required_approvers": required_approvers,
+                    "expires_at": gate["expires_at"],
+                },
+            )
 
         # A mandate whose expiry is already past is stored but expired.
         record = self._refresh_state(record)
@@ -214,9 +219,7 @@ class MandateEngine:
             )
         gate = self.gate_engine.get_gate_by_mandate_id(mandate_id)
         if gate is None:
-            raise MandateEngineError(
-                f"Mandate {mandate_id} has no approval gate", code=errors.NOT_FOUND
-            )
+            raise MandateEngineError(f"Mandate {mandate_id} has no approval gate", code=errors.NOT_FOUND)
         try:
             if decision == "approve":
                 gate = self.gate_engine.approve_gate(gate["gate_id"], actor)
@@ -231,10 +234,17 @@ class MandateEngine:
             # Surface gate failures through the engine's error type, keeping the code.
             raise MandateEngineError(str(e), code=e.code)
         event = "approval_recorded" if decision == "approve" else "rejection_recorded"
-        self._audit(event, mandate_id, {
-            "gate_id": gate["gate_id"], "actor": actor, "decision": decision,
-            "approvals": gate["approvals"], "rejections": gate["rejections"],
-        })
+        self._audit(
+            event,
+            mandate_id,
+            {
+                "gate_id": gate["gate_id"],
+                "actor": actor,
+                "decision": decision,
+                "approvals": gate["approvals"],
+                "rejections": gate["rejections"],
+            },
+        )
         record = self._refresh_state(self._record(mandate_id))
         return self._public(record)
 
@@ -260,24 +270,17 @@ class MandateEngine:
     def execute_mandate(self, mandate_id, executor_id="system"):
         record = self._refresh_state(self._record(mandate_id))
         state = record["state"]
-        mandate = record["mandate"]
 
         if state == "executed":
-            raise MandateEngineError(
-                f"Mandate {mandate_id} has already been executed", code=errors.INVALID_TRANSITION
-            )
+            raise MandateEngineError(f"Mandate {mandate_id} has already been executed", code=errors.INVALID_TRANSITION)
         if state == "rejected":
             raise MandateEngineError(
                 f"Mandate {mandate_id} was rejected by human approvers", code=errors.MANDATE_REJECTED
             )
         if state == "expired":
-            raise MandateEngineError(
-                f"Mandate {mandate_id} has expired", code=errors.MANDATE_EXPIRED
-            )
+            raise MandateEngineError(f"Mandate {mandate_id} has expired", code=errors.MANDATE_EXPIRED)
         if state == "failed":
-            raise MandateEngineError(
-                f"Mandate {mandate_id} is in state 'failed'", code=errors.INVALID_TRANSITION
-            )
+            raise MandateEngineError(f"Mandate {mandate_id} is in state 'failed'", code=errors.INVALID_TRANSITION)
         if state == "pending_approval":
             gate = self.gate_engine.get_gate_by_mandate_id(mandate_id)
             gate_id = gate["gate_id"] if gate else None
@@ -296,6 +299,5 @@ class MandateEngine:
         record["state"] = "executed"
         self.store.put_mandate(record)
         self._sync_view(record)
-        self._audit("mandate_executed", mandate_id,
-                    {"executor": executor_id, "result": result})
+        self._audit("mandate_executed", mandate_id, {"executor": executor_id, "result": result})
         return result

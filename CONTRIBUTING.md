@@ -20,16 +20,17 @@ Do not rely on older roadmap or plan documents for implementation status.
 There is currently **no `dev` branch**; earlier versions of this document
 described one in error.
 
-### ⚠️ Release automation warning
+### Releases are manual
 
-`.github/workflows/release.yml` is currently configured to publish to PyPI
-and npm **automatically on every push to `main`**, gated only by the quality
-and test jobs. Until the release-engineering phase replaces this with an
-explicit, maintainer-approved release process:
+`.github/workflows/release.yml` is a **manual-only** preparation workflow
+(`workflow_dispatch`): it tests, builds, and verifies the distribution
+artifacts and uploads them for maintainer inspection. It never publishes.
+(Earlier, this workflow published to PyPI and npm automatically on every
+push to `main`; that behavior was removed in Phase 6.)
 
-- Treat every merge to `main` as a potential public release.
-- Do not merge a PR unless its changes are verified and release-worthy.
-- Publishing, tagging, or deploying requires explicit maintainer approval.
+- Merging to `main` never publishes anything.
+- Publishing, tagging, or deploying requires explicit maintainer approval
+  and follows [docs/releasing.md](docs/releasing.md).
 
 --------------------------------------------------------------------
 
