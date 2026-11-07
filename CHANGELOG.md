@@ -15,7 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   the artifact in a clean venv (`scripts/verify_installed_artifact.py`);
   quality gates (flake8, black, mypy, bandit) are green over the shipped
   code; the release workflow no longer publishes automatically — it is
-  manual-only and never publishes (see `docs/releasing.md`). Quickstart
+  manual-only and never publishes (see `docs/releasing.md`; the two
+  replacement workflow files are still pending a separate push — the
+  GitHub App lacks the workflows permission — and must land before any
+  merge to main). Quickstart
   rewritten to the installed-artifact flow.
 
 ### Added
