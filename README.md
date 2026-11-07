@@ -4,6 +4,8 @@
 
 E4A enables multi-agent systems to express, share, and enforce organizational culture, governance primitives, and safety invariants while interoperating across diverse runtimes and administrative domains. It complements existing standards like A2A and AP2 by adding a focused layer for culture, governance, and auditability.
 
+**Purpose and non-purpose of v1:** E4A is intended to become a cultural norm by which AI agents interact and form their own societies. Version 1.0 is not that full cultural protocol; it is the governance substrate—a constitutional kernel providing explicit intent, mandates, approval gates, lifecycle rules, and auditable records. Charter adoption, membership and constellation formation, norm evolution, reflection and repair, reputation consequences, and federation remain future cultural-layer work.
+
 > **Project maturity — read this first**
 >
 > E4A is an **early-stage prototype**, not a production protocol and not yet a

@@ -16,6 +16,42 @@ interpreted as in RFC 2119.
 
 ## 1. Scope
 
+### Purpose and non-purpose
+
+E4A is intended to become a cultural norm by which AI agents interact and
+form their own societies. **Version 1.0 is not that full cultural protocol.**
+It is the governance substrate for that larger purpose: a constitutional
+kernel that makes commitments legible, reviewable, and auditable.
+
+Version 1.0 provides explicit intent as a first-class artifact, the mandate
+lifecycle, approval gates, lifecycle rules, and audit records. It does not
+yet specify, at protocol level:
+
+- charter adoption or amendment;
+- membership, joining or leaving, role assignment, or constellation
+  formation;
+- a norm lifecycle of proposal, contestation, adoption, sanction, repair,
+  and sunset;
+- Reflection Events or Wisdom Artifacts;
+- reputation consequences; or
+- inter-group diplomacy or federation.
+
+Those capabilities form the cultural and society layer that follows 1.0.
+Describing 1.0 itself as the complete cultural protocol would therefore be
+an overclaim. In addition, because 1.0 provides no cryptographic
+authenticity and its reference execution is simulated, 1.0 must not be used
+to govern real funds (see §9).
+
+The design draws on organizational theory: delegation and principal–agent
+theory; institutional theory; Ostrom-style commons governance;
+organizational learning; role theory, expressed in E4A as “roles, not
+ranks”; and trust and reputation. This version names those roots but does
+not yet formally cite them or test whether using the protocol produces the
+behaviors the theories predict. Making that mapping—and its evaluation—
+explicit is future work.
+
+### Specified scope
+
 E4A 1.0 specifies the **mandate lifecycle**: how a mandate is created,
 validated, approved or rejected, executed, and audited, in a way that
 independent implementations can interoperate on.
