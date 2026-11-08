@@ -1,3 +1,8 @@
+# STATUS: HISTORICAL / EXPERIMENTAL — NOT AN ACTIVE PLAN.
+# This file records an earlier planning snapshot. It does not indicate
+# completion of any deliverable listed below. The active roadmap is
+# ../ROADMAP.md and the verified implementation status is
+# ../docs/project-status.md; both supersede this file.
 version: 1.1
 components:
   core: true

@@ -11,9 +11,9 @@ class ScribeAgent:
     Backward compatible with legacy tests that used 'log_path' and both styles of append_entry().
     """
 
-    def __init__(self, node_id: str = None, log_path: str = None):
+    def __init__(self, node_id: str | None = None, log_path: str | None = None):
         self.node_id = node_id or f"scribe-{uuid.uuid4().hex[:8]}"
-        self.ledger = []
+        self.ledger: list = []
         self.log_path = Path(log_path) if log_path else None
 
         # Prepare log file if needed
@@ -71,7 +71,7 @@ class ScribeAgent:
         else:
             raise TypeError("append_entry() must be called with either (dict) or (entry_type, payload, summary)")
 
-    def get_entries(self, entry_type: str = None):
+    def get_entries(self, entry_type: str | None = None):
         if entry_type:
             return [e for e in self.ledger if e["entry_type"] == entry_type]
         return self.ledger

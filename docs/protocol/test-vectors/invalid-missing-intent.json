@@ -1,0 +1,9 @@
+{
+  "mandate": {
+    "issuer": "did:ex:alice",
+    "beneficiary": "did:ex:bob"
+  },
+  "expect": "invalid",
+  "error_code": "E4A_VALIDATION_FAILED",
+  "note": "intent is required in 1.0 (this is the shape specs/mandate_v1.json accepted \u2014 the canonical schema does not)."
+}

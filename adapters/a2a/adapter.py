@@ -1,23 +1,16 @@
 # adapters/a2a/adapter.py
-import json
-from pathlib import Path
 from typing import Dict, Any
-from jsonschema import validate, ValidationError
 
-# Assumes SDK is structured as sdk/python/e4a_sdk
-from sdk.python.e4a_sdk.mandate_engine import MandateEngine, MandateEngineError
-from sdk.python.e4a_sdk.governance_kernel import GovernanceKernel
-from sdk.python.e4a_sdk.scribe_agent import ScribeAgent
+from e4a_sdk.mandate_engine import MandateEngine, MandateEngineError
+from e4a_sdk.governance_kernel import GovernanceKernel
+from e4a_sdk.scribe_agent import ScribeAgent
 
-SPEC_DIR = Path(__file__).resolve().parents[2] / "specs"
-
-def _load_schema(name: str) -> Dict[str, Any]:
-    path = SPEC_DIR / name
-    if not path.exists():
-        raise FileNotFoundError(f"Schema not found: {path}")
-    return json.loads(path.read_text())
-
-MANDATE_SCHEMA = _load_schema("mandate_v1.json")
+# NOTE (E4A 1.0): this adapter performs no schema validation of its own.
+# There is exactly one validation path — the MandateEngine validates against
+# the canonical protocol schema bundled in the SDK (spec section 13.1).
+# The previous behavior (adapter validating against specs/mandate_v1.json
+# while the engine required the v2/intent shape) made the adapter flow fail
+# end to end.
 
 class E4A_A2A_Adapter:
     """
@@ -35,23 +28,6 @@ class E4A_A2A_Adapter:
         self.mandate_engine = MandateEngine(scribe=self.scribe)
         self.gov = GovernanceKernel()
 
-    def _validate(self, payload: Dict[str, Any], schema_name: str):
-        """
-        Validates a payload against a given JSON schema.
-
-        Args:
-            payload: The payload to validate.
-            schema_name: The name of the schema to validate against.
-
-        Raises:
-            ValueError: If the payload fails schema validation.
-        """
-        schema = _load_schema(schema_name)
-        try:
-            validate(instance=payload, schema=schema)
-        except ValidationError as e:
-            raise ValueError(f"Payload failed schema validation: {e.message}")
-
     def create_mandate(self, data_part: Dict[str, Any]) -> Dict[str, Any]:
         """
         Creates a new mandate.
@@ -65,7 +41,6 @@ class E4A_A2A_Adapter:
         Returns:
             A dictionary containing the status and the created mandate.
         """
-        self._validate(data_part, "mandate_v1.json")
         mandate = self.mandate_engine.create_mandate(data_part)
         self.scribe.record("mandate_created", payload=mandate, summary="Mandate created via A2A Adapter")
         return {"status": "created", "mandate": mandate}

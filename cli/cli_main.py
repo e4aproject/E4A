@@ -1,53 +1,40 @@
+"""E4A command-line entry point.
+
+Installed as the ``e4a`` console script by the e4a-sdk distribution.
+Commands:
+
+- ``e4a version`` — print the package and protocol versions.
+- ``e4a mandate ...`` — the mandate lifecycle (see cli/e4a_cli.py).
+- ``e4a serve`` — run the reference HTTP service (uvicorn, factory mode).
 """
-Central CLI entrypoint. Uses typer to expose subcommands (mandates, governance, reputation, sdk).
-Reads config via Config loader.
-"""
+
 import typer
-import json
-from core.config_loader import load_config
-from cli.e4a_cli import app as e4a_app  # existing CLI commands
-from e4a_sdk.client import E4AClient
 
-cli = typer.Typer()
-config = load_config()
+from cli.e4a_cli import app as mandate_app
+from e4a_sdk import PROTOCOL_VERSION, __version__
 
-
-@cli.callback(invoke_without_command=True)
-def main(ctx: typer.Context):
-    """
-    E4A CLI — use --help for subcommands.
-    """
-    if ctx.invoked_subcommand is None:
-        typer.echo("E4A CLI — use subcommands. Try 'e4a --help'.")
+cli = typer.Typer(help="E4A — Ethos4Agents protocol CLI.")
+cli.add_typer(mandate_app, name="mandate")
 
 
-# mount existing subcommands under `e4a` root
-cli.add_typer(e4a_app, name="e4a")
+@cli.command("version")
+def version():
+    """Print package and protocol versions."""
+    typer.echo(f"e4a-sdk {__version__} (protocol {PROTOCOL_VERSION})")
 
 
-@cli.command("sdk-test")
-def sdk_test():
-    """Quick SDK smoke test using local config.api host."""
-    cfg = load_config()
-    base_url = cfg.get("api", {}).get("host", "http://localhost:8000")
-    typer.echo(f"Running E4A SDK smoke test against: {base_url}")
-    try:
-        client = E4AClient(base_url=base_url)
-        info = client.health()
-        typer.echo(json.dumps(info, indent=2))
-    except Exception as e:
-        typer.echo(typer.style("⚠️  SDK test failed:", fg=typer.colors.RED, bold=True))
-        typer.echo(f"Error: {e}")
-        typer.echo(
-            "\nTip: Ensure the E4A API server is running.\n"
-            "You can start it with:\n"
-            "  uvicorn api.server:app --reload --port 8000\n"
-            "Then rerun the prompt."
-        )
+@cli.command("serve")
+def serve(
+    host: str = typer.Option("127.0.0.1", "--host"),
+    port: int = typer.Option(8000, "--port"),
+):
+    """Run the reference HTTP service from the installed package."""
+    import uvicorn
+
+    uvicorn.run("api.server:create_app", factory=True, host=host, port=port)
 
 
 app = cli
-
 
 if __name__ == "__main__":
     cli()
