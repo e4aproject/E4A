@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Phase 8 — security & operational review:** full report in
+  `docs/security-review.md`. One high finding fixed: the API token
+  previously gated only `/v1`, leaving the legacy routes (create,
+  execute, gates, governance, reputation) unauthenticated on the same
+  store — the token now guards every route except health/readiness, with
+  a constant-time comparison and regression tests. All documented
+  controls re-classified with test evidence; bandit clean; pip-audit
+  found no known vulnerabilities; backup/restore verified by test.
 - **Phase 7 — conformance suite (TCK):** new `conformance/` suite
   (35 tests) validates the protocol from the spec, normative schema, and
   test vectors only — no implementation internals — through the public

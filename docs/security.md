@@ -12,22 +12,23 @@
 > not a security audit, and high-impact production use requires independent
 > human review.
 
-### Implementation status of documented mitigations (verified 2026-11-05)
+### Implementation status of documented mitigations (baseline 2026-11-05; re-verified 2026-11-07 in the Phase 8 review, [security-review.md](security-review.md))
 
 | ID | Documented mitigation | Classification | Evidence |
 |:---|:---|:---|:---|
-| T1 | Per-mandate `nonce`/`replay_nonce` on all verifiable artifacts | **Partially implemented** | `MandateEngine.create_mandate` scans stored mandates for a duplicate `replay_nonce` and returns the existing mandate (in-memory only; no persistence, no cross-process guarantee, no adversarial replay test). "All verifiable artifacts" is not demonstrated. |
+| T1 | Per-mandate `nonce`/`replay_nonce` on all verifiable artifacts | **Implemented and tested** (mandate submissions) | Per-(issuer, nonce) uniqueness with idempotent replay and `E4A_NONCE_CONFLICT`, persisted in the store; unit tests (L6) and the Phase 7 conformance suite. The "all verifiable artifacts" wording remains broader than 1.0: gates carry no independent nonces. See security-review.md. |
 | T2 | `validator_quorum`, rotating stakes, meta-audit attestations | **Not supported** (simulation only) | The only quorum logic is a `quorum` parameter in the governance kernel's simulated voting (`simulate_and_enact`). No staking, rotation, validator network, or attestation verification exists in code. |
 | T3 | KMS, short-lived keys, key rotation registry | **Not supported** | No key management, signing keys, or rotation code exists in the repository. A documentation recommendation only. |
 | T4 | Staged opt-in upgrades, rollback windows, PEF quorum thresholds | **Deferred** | Governance kernel is a self-described skeleton with simulated voting and local JSON persistence; `governance/pef_spec.md` is an empty file. |
 | T5 | URA fail-over queues, human-in-the-loop reconciliation | **Not supported** | Universal Rail Adapter implementations are empty files or mocks; the mock anchoring server does not compile. No fail-over or reconciliation code exists. |
-| T6 | Canonicalized logs with `content_hash`; signed, anchored attestations | **Partially implemented** (hashing only) | `tools/mission_log_canonicalizer.py` computes a SHA-256 over canonicalized JSON, and the scribe writes a local JSONL mission log. **Signatures and anchoring are not implemented** — the only `sign` implementation is in the AP2 *mock* server and produces an unverified placeholder value. |
+| T6 | Canonicalized logs with `content_hash`; signed, anchored attestations | **Partially implemented** | Audit records carry the spec §10 fields and are append-only within the store's interface (TCK-verified). The optional §10 hash-chain extension is **not** implemented in the runtime audit path (a standalone canonicalizer tool exists in `tools/`); **signatures and anchoring are not implemented** (decision D2). See security-review.md. |
 
 **Known v1 security limitations (current):** v1 provides **no cryptographic
-authenticity** for mandates or audit records unless the scope-lock phase
-(decision D2 in the status document) decides otherwise; mandate storage is
-in-memory; approval enforcement is not yet guaranteed on every execution
-path. Do not use E4A to govern real funds or high-impact actions.
+authenticity** for mandates or audit records (decision D2: none in 1.0);
+actor identities are asserted strings. Storage is persistent (SQLite) and
+approval enforcement sits in the single lifecycle path used by the SDK,
+API, and CLI — but none of that makes records non-repudiable. Do not use
+E4A to govern real funds or high-impact actions.
 
 ---
 

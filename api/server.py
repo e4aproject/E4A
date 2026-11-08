@@ -21,6 +21,7 @@ Clients must branch on code, never on message text.
 """
 
 import logging
+import hmac
 import os
 
 from fastapi import Depends, FastAPI, Header, HTTPException, Request
@@ -97,13 +98,14 @@ def create_app(db_path=None, api_token=None):
 
     def require_token(authorization: str = Header(default=None)):
         if api_token is not None:
-            if authorization != f"Bearer {api_token}":
+            expected = f"Bearer {api_token}"
+            if authorization is None or not hmac.compare_digest(authorization, expected):
                 raise HTTPException(
                     status_code=401,
                     detail={"error": {"code": "E4A_UNAUTHORIZED", "message": "Missing or invalid API token"}},
                 )
 
-    v1 = [Depends(require_token)]
+    v1 = [Depends(require_token)]  # applied to /v1 AND the legacy surface (Phase 8, finding F1)
 
     # ------------------------------------------------------------------
     # Service health
@@ -194,17 +196,17 @@ def create_app(db_path=None, api_token=None):
         currency: str = "USD"
         intent: IntentPart
 
-    @app.post("/mandates/create")
+    @app.post("/mandates/create", dependencies=v1)
     def create_mandate_legacy(req: MandateRequest):
         result = engine.create_mandate(req.model_dump())
         return {"status": "created", "mandate": result}
 
-    @app.post("/mandates/execute/{mandate_id}")
+    @app.post("/mandates/execute/{mandate_id}", dependencies=v1)
     def execute_mandate_legacy(mandate_id: str):
         result = engine.execute_mandate(mandate_id)
         return {"status": "executed", "mandate_id": mandate_id, "result": result}
 
-    @app.get("/reputation")
+    @app.get("/reputation", dependencies=v1)
     def get_reputation():
         rep.ingest_from_scribe(scribe)
         return {"reputation": rep.get_all()}
@@ -214,24 +216,24 @@ def create_app(db_path=None, api_token=None):
         action: str
         description: str
 
-    @app.post("/governance/propose")
+    @app.post("/governance/propose", dependencies=v1)
     def propose_change(p: Proposal):
         return {"status": "proposed", "proposal": gov.propose(p.id, p.action, p.description)}
 
-    @app.post("/governance/vote")
+    @app.post("/governance/vote", dependencies=v1)
     def vote_proposal(pid: str, vote: str):
         return {"status": "voted", "result": gov.vote(pid, vote)}
 
-    @app.post("/governance/enact")
+    @app.post("/governance/enact", dependencies=v1)
     def enact_proposal(pid: str):
         return {"status": "enacted", "result": gov.enact(pid)}
 
-    @app.get("/gates/pending")
+    @app.get("/gates/pending", dependencies=v1)
     def get_pending_gates():
         pending = [g for g in engine.gate_engine.gates.values() if g["status"] == "pending"]
         return {"pending_gates": pending}
 
-    @app.post("/gates/{gate_id}/approve")
+    @app.post("/gates/{gate_id}/approve", dependencies=v1)
     def approve_gate(gate_id: str, approver_id: str):
         try:
             gate = engine.gate_engine.approve_gate(gate_id, approver_id)
@@ -239,7 +241,7 @@ def create_app(db_path=None, api_token=None):
         except GateEngineError as e:
             return {"status": "error", "message": str(e)}
 
-    @app.post("/gates/{gate_id}/reject")
+    @app.post("/gates/{gate_id}/reject", dependencies=v1)
     def reject_gate(gate_id: str, rejector_id: str):
         try:
             gate = engine.gate_engine.reject_gate(gate_id, rejector_id)

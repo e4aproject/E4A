@@ -9,6 +9,10 @@ lifecycle engine, with SQLite persistence.
 > API token below is a shared-secret gate, not authentication of actors.
 > Run this service on a trusted network or behind a real authentication
 > layer. Do not use it to govern real funds or high-impact actions.
+The service itself provides no TLS, rate limiting, or request-size
+limits; on any network you do not fully trust, terminate TLS and set
+those limits at a reverse proxy in front of it (the bearer token is
+sniffable over plain HTTP). See `docs/security-review.md` (Phase 8).
 
 ## Run with Docker (reference local deployment)
 
