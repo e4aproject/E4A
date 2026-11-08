@@ -42,7 +42,7 @@ PYTHONPATH=.:sdk/python E4A_DB_PATH=./data/e4a-v1.db \
 | Variable | Default | Meaning |
 |---|---|---|
 | `E4A_DB_PATH` | `./data/e4a-v1.db` | SQLite database file. The directory is created if missing. `:memory:` selects an ephemeral in-memory store (development only; the service logs a warning, and `/ready` reports `"persistent": false`). |
-| `E4A_API_TOKEN` | *(unset)* | If set (non-empty), every `/v1` request requires `Authorization: Bearer <token>`. `/health` and `/ready` stay open for orchestrator probes. |
+| `E4A_API_TOKEN` | *(unset)* | If set (non-empty), every request except `/health` and `/ready` requires `Authorization: Bearer <token>` — the token gates the legacy routes as well as `/v1` (Phase 8, finding F1). `/health` and `/ready` stay open for orchestrator probes. |
 
 Invalid configuration fails at startup (for example, a database written by
 an unsupported newer protocol major version raises `E4A_STORE_VERSION`

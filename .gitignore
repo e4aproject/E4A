@@ -4,3 +4,5 @@ node_modules
 __pycache__/
 # Local service databases (runtime state, never source)
 *.db
+# Build outputs (Phase 9: stale tracked artifacts broke the documented install)
+dist/

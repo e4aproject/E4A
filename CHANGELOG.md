@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- **Phase 9 — clean-user verification & release candidate:** the
+  quickstart and deployment guides were followed literally from a fresh
+  clone of the branch. One release-blocking defect found and fixed: four
+  stale 1.0.0 build artifacts tracked under `dist/` made the documented
+  `pip install dist/*.whl` fail with a dependency conflict — they are
+  removed from the repository and `dist/` is now gitignored. The
+  deployment guide's token-scope description now matches the Phase 8
+  fix. Release-candidate notes: `docs/release-candidate.md`.
 - **Phase 8 — security & operational review:** full report in
   `docs/security-review.md`. One high finding fixed: the API token
   previously gated only `/v1`, leaving the legacy routes (create,

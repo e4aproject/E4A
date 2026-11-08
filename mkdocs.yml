@@ -11,6 +11,7 @@ nav:
   - Deployment: deployment.md
   - Releasing: releasing.md
   - Security Review (Phase 8): security-review.md
+  - Release Candidate: release-candidate.md
   - Reference:
       - API: reference/api.md
       - CLI: reference/cli.md
